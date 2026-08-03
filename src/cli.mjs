@@ -21,6 +21,7 @@ import { bloquesDeModelo } from './roles.mjs';
 import { validar } from './esquema.mjs';
 import { diagnosticar, formatear } from './doctor.mjs';
 import { actualizar, iniciar } from './ciclo.mjs';
+import { catalogo } from './presets.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
 
@@ -244,9 +245,17 @@ export function comprobar(proyecto) {
 if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) {
   const [orden, proyecto = process.cwd()] = process.argv.slice(2);
   try {
-    if (orden === 'init') {
-      const [nombre, slug] = process.argv.slice(4);
-      iniciar(proyecto, { nombre, slug });
+    if (orden === 'roles') {
+      for (const p of catalogo()) {
+        console.log(`\n${p.nombre}  (${p.plantilla})`);
+        console.log(`  ${p.descripcion.replace(/\s+/g, ' ').trim()}`);
+      }
+    } else if (orden === 'init') {
+      const args = process.argv.slice(4);
+      const i = args.indexOf('--roles');
+      const roles = i >= 0 ? args[i + 1].split(',').map((r) => r.trim()) : undefined;
+      const [nombre, slug] = args.filter((a) => a !== '--roles' && a !== args[i + 1]);
+      iniciar(proyecto, { nombre, slug, roles });
     } else if (orden === 'update') {
       const version = process.argv[4];
       if (!version) throw new Error('uso: showi update <proyecto> <version>');
@@ -279,7 +288,7 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
         process.exit(1);
       }
     } else {
-      console.error('uso: showi <init|sync|normaliza|check|doctor|update> [proyecto] [...]');
+      console.error('uso: showi <roles|init|sync|normaliza|check|doctor|update> [proyecto] [...]');
       process.exit(2);
     }
   } catch (e) {

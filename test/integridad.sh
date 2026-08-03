@@ -63,6 +63,20 @@ if [[ -z "$PROYECTO" ]]; then
     verde "$skill"
   done
 
+  # El catálogo de roles: arquetipos, no proyectos. Un preset que nombra un framework envejece con
+  # él, y el proyecto siguiente tendría que borrar más de lo que aprovecha.
+  for f in presets/*.yml; do
+    [[ -f "$f" ]] || continue
+    hallazgo=$(grep -nEi "$FUGA" "$f")
+    if [[ -n "$hallazgo" ]]; then
+      rojo "FUGA · $f nombra un stack concreto:"
+      printf '      %s\n' "$hallazgo"
+      fugas=$((fugas + 1))
+    else
+      verde "preset $(basename "$f" .yml)"
+    fi
+  done
+
   if [[ ! -f rules/metodo.md ]]; then
     rojo "FALTA · rules/metodo.md — es la raíz del método, la que acaba en AGENTS.md"
     faltan=$((faltan + 1))

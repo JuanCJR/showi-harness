@@ -33,40 +33,4 @@ modelos:
     claudecode: { model: sonnet }
 
 roles:
-  orchestrator:
-    plantilla: orquestador
-    descripcion: >-
-      TODO: cuándo invocar este rol. Es lo que decide si se usa; no es decorativo.
-    identidad: >-
-      Eres quien especifica, planifica, delega y verifica. No escribes código de producción.
-    dominio: >-
-      TODO
-    stack: >-
-      TODO
-    verificacion:
-      - { cmd: "TODO: el comando que corre la suite", que: "" }
-
-  implementador:
-    plantilla: implementador
-    descripcion: >-
-      TODO: cuándo invocar este rol.
-    identidad: >-
-      Eres quien ejecuta. No eliges qué construir: ejecutas una tarea ya especificada, en TDD.
-    dominio: >-
-      TODO
-    territorio: ["src/**"]
-    fronteras: >-
-      TODO: dónde puedes escribir y dónde no.
-    stack: >-
-      TODO
-    tests:
-      - { nivel: "Unit", ruta: "src/**/*.test.*" }
-    verificacion:
-      - { cmd: "TODO", que: "" }
-
-instrumentacion:
-  habilitada: true
-  destino: .harness
-  hooks:
-    log_skill_usage: { activo: true }
-    delegation_watch: { activo: true }
+{{roles}}

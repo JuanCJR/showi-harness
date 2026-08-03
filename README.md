@@ -17,6 +17,7 @@ fichero.
 | `skills/` | El método. Cuatro skills que no nombran ningún proyecto ni ningún stack. |
 | `rules/` | La raíz del método, la que acaba en `AGENTS.md` y equivalentes. |
 | `templates/` | Los roles partidos en dos: lo portable y lo que rellena el perfil. |
+| `presets/` | El catálogo de roles. **Arquetipos, no proyectos**: `frontend` dice qué hace ese rol sin nombrar ninguna librería. Añadir uno es dejar un `.yml`. |
 | `instrumentacion/` | Los hooks que miden qué skills se usan de verdad y quién escribe el código. |
 | `src/` | El CLI. |
 | `specs/` | Este repositorio se construye con su propio método. Empieza por [`000-extraccion`](specs/000-extraccion/spec.md). |
@@ -25,6 +26,8 @@ fichero.
 
 ```
 showi init                      instalar el harness en un repositorio
+showi roles                     qué roles trae el catálogo
+showi init . "Mi API" mi-api --roles orchestrator,backend
 showi sync                      showi.yml + el método  →  los seis destinos
 showi normaliza                 arregla las skills de origen con el nombre mal puesto
 showi check                     ¿algún generado ha derivado?           (sale 1 si sí)
@@ -37,6 +40,23 @@ showi specs project --to kiro   proyectar las specs al formato de Kiro
 escrita en prosa — *una skill o un servidor apagado en la configuración no se puede invocar aunque un
 rol lo declare obligatorio*. Ese cruce es el que dejó tres skills muertas durante siete specs, y hoy no
 lo hace nadie.
+
+## Elegir roles
+
+```bash
+showi roles                                        # ver el catálogo
+showi init . "Mi API" mi-api --roles orchestrator,backend
+```
+
+El catálogo son **arquetipos**: `frontend` describe qué hace ese rol —interfaz, estado, navegación,
+accesibilidad, tests desde el usuario— **sin nombrar ninguna librería**. Lo que cambia entre
+proyectos —el stack, el territorio, los comandos— entra como `TODO` en `showi.yml`, y el perfil
+siempre gana.
+
+Un catálogo que nombrara frameworks envejecería con ellos, y el proyecto siguiente tendría que
+borrar más de lo que aprovecha. Hay un test y un paso de CI que lo hacen exigible.
+
+**Para añadir un rol**: deja un `.yml` en `presets/`. No hay lista que actualizar.
 
 ## La secuencia completa
 

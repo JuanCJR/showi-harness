@@ -1,6 +1,6 @@
 {
   "name": "@showi/harness",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "El método —SDD, TDD, contrato de parada y verificación— llevado a cualquier proyecto y a cualquier herramienta desde una sola fuente",
   "type": "module",
   "license": "MIT",
@@ -13,7 +13,8 @@
     "rules",
     "templates",
     "instrumentacion",
-    "schema"
+    "schema",
+    "presets"
   ],
   "scripts": {
     "test": "node --test 'test/**/*.test.mjs' && python3 -m unittest discover -s test -p 'test_*.py'",

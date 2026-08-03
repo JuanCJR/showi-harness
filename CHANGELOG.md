@@ -10,6 +10,22 @@ mejorar el método sin obligar a nadie a tocar su perfil.
 
 ---
 
+## 0.3.0 — 2026-08-03
+
+**Catálogo de roles.** `showi roles` lista lo que hay; `showi init --roles a,b,c` elige. Entran
+`orchestrator`, `frontend` y `backend`.
+
+Son **arquetipos, no proyectos**: `frontend` dice qué hace ese rol —interfaz, estado, navegación,
+accesibilidad, tests desde el usuario— sin nombrar ninguna librería. Lo que cambia entre proyectos
+entra como `TODO` en el perfil, y el perfil gana.
+
+La alternativa era un catálogo con variantes por stack —`frontend-react`, `backend-fastapi`—, que
+arranca más rápido y envejece con el framework que nombra: el proyecto siguiente borraría más de lo
+que aprovecha. La regla es la misma que sostiene las skills de método, un nivel más arriba, y la
+hacen exigible un test y un paso de CI.
+
+**Para añadir un rol basta con dejar un `.yml` en `presets/`.** No hay lista que actualizar.
+
 ## 0.2.0 — 2026-08-03
 
 Primera versión con el ciclo completo: instalar, sincronizar, diagnosticar y **actualizar**.

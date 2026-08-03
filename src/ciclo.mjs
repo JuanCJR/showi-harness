@@ -16,9 +16,10 @@ import { join } from 'node:path';
 
 import { comprobar, sincronizar } from './cli.mjs';
 import { render } from './render.mjs';
+import { bloqueDePerfil, catalogo } from './presets.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
-const VERSION_METODO = '0.2.0';
+const VERSION_METODO = '0.3.0';
 
 /**
  * Crea el perfil de un proyecto nuevo y lo sincroniza. El perfil nace con marcadores `TODO`
@@ -34,6 +35,11 @@ export function iniciar(proyecto, datos = {}, opciones = {}) {
     );
   }
 
+  // Los roles salen del catálogo. Un nombre que no está **para** el init: dejar el perfil a medias
+  // con un rol menos sería peor, porque el fallo aparecería mucho después y lejos de su causa.
+  const roles = datos.roles?.length ? datos.roles : ['orchestrator', 'frontend', 'backend'];
+  const bloques = roles.map((r) => bloqueDePerfil(r)).join('\n');
+
   const creados = ['showi.yml'];
   writeFileSync(
     destino,
@@ -41,6 +47,7 @@ export function iniciar(proyecto, datos = {}, opciones = {}) {
       nombre: datos.nombre ?? 'TODO',
       slug: datos.slug ?? 'todo',
       metodo: datos.metodo ?? VERSION_METODO,
+      roles: bloques,
     }),
   );
 
@@ -71,7 +78,8 @@ export function iniciar(proyecto, datos = {}, opciones = {}) {
     console.log('  npx rulesync@latest install');
     console.log('  showi normaliza');
     console.log('  npx rulesync@latest generate');
-    console.log('\nY luego rellena los TODO de showi.yml y vuelve a correr `showi sync`.');
+    console.log(`\nRoles del catálogo: ${roles.join(', ')}`);
+    console.log('Rellena sus TODO en showi.yml y vuelve a correr `showi sync`.');
     console.log('`showi doctor` te dirá qué falta en cada momento.');
   }
   return { creados };
