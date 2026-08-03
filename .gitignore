@@ -3,3 +3,5 @@ node_modules/
 rulesync.lock
 *.jsonl
 .DS_Store
+__pycache__/
+*.pyc

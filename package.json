@@ -16,7 +16,10 @@
     "schema"
   ],
   "scripts": {
-    "test": "node --test 'test/**/*.test.mjs'"
+    "test": "node --test 'test/**/*.test.mjs' && python3 -m unittest discover -s test -p 'test_*.py'",
+    "test:js": "node --test 'test/**/*.test.mjs'",
+    "test:py": "python3 -m unittest discover -s test -p 'test_*.py'",
+    "integridad": "bash test/integridad.sh"
   },
   "engines": {
     "node": ">=22"

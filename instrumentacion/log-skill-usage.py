@@ -1,44 +1,37 @@
 #!/usr/bin/env python3
-"""Registra cada invocación de skill en `.claude/skill-usage.jsonl`.
+"""Registra cada invocación de skill, para saber qué skills se usan **de verdad**.
 
-Existe para que la próxima retrospectiva mida el uso de skills con datos de este
-repositorio, y no con el contador global de `~/.claude.json` —que mezcla todos los
-proyectos y no distingue quién invocó—.
+Existe porque se concluyó que «las skills no se usan» a partir de un contador que valía cero
+**porque las skills estaban apagadas en la configuración**. Las diez con cero invocaciones eran
+exactamente las diez apagadas: ese cero no medía nada.
 
-Se engancha como hook `PostToolUse` con matcher `Skill`. Nunca falla hacia fuera:
-cualquier error se traga y sale 0, porque un hook que rompe una llamada de
-herramienta cuesta más que el dato que recoge.
+Se engancha al evento posterior al uso de una herramienta, con matcher `Skill`. Nunca falla hacia
+fuera: cualquier error se traga y sale 0, porque un hook que rompe una llamada cuesta más que el
+dato que recoge.
 
-Cada línea es un objeto JSON:
-    ts      instante ISO-8601 de la invocación
-    skill   nombre de la skill invocada
-    agent   `main` si la invocó el agente principal, o el tipo de subagente
-    session id de sesión, para separar corridas
+Un campo que no se puede resolver se escribe nulo. **Jamás un valor por defecto**: ver `_payload`.
+
+    python3 -c "import json,collections;print(collections.Counter(json.loads(l)['skill'] for l in open('.harness/skill-usage.jsonl')))"
 """
 
-import json
 import os
 import sys
-from datetime import datetime, timezone
 
-LOG = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
-    ".claude",
-    "skill-usage.jsonl",
-)
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import _payload
 
 
 def main() -> None:
-    payload = json.loads(sys.stdin.read())
-    entry = {
-        "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-        "skill": (payload.get("tool_input") or {}).get("skill", "?"),
-        # `agent_type` solo viene cuando la llamada nace dentro de un subagente.
-        "agent": payload.get("agent_type", "main"),
-        "session": payload.get("session_id", "?"),
+    campos = _payload.leer(sys.stdin.read())
+    entrada = {
+        "skill": campos["skill"],
+        "agent": campos["agent"],
+        "session": campos["session"],
+        "_esquema": campos["_esquema"],
     }
-    with open(LOG, "a", encoding="utf-8") as fh:
-        fh.write(json.dumps(entry, ensure_ascii=False) + "\n")
+    if "_claves" in campos:
+        entrada["_claves"] = campos["_claves"]
+    _payload.anota("skill-usage.jsonl", entrada)
 
 
 try:

@@ -39,6 +39,15 @@ algo: un comando que no corre nada sale en verde y no significa nada.
   - **Mutaciones**: obligatorios invertidos → caen 9 · el vigía de palabras no vigila → cae 1 ·
     solo se reporta el primer problema → cae 1.
 
+### Hallazgo de la fase 5 — un test que no probaba lo que decía
+
+El caso «los hooks salen 0 ante entrada inválida» pasaba **sin la red de seguridad puesta**. Ninguna
+de sus entradas llegaba a lanzar una excepción, así que medía otra cosa. Lo descubrió una mutación,
+no una revisión: es exactamente para lo que sirve preguntarse «¿qué cambio tumbaría este test?».
+
+Corregido con un caso que sí ejercita la red. Y de paso se corrigió el `DONE` de T-012, que no
+ejecutaba nada.
+
 ### Desvío de la fase 4
 
 `src/config.mjs` no estaba en los artefactos de T-010. Los cuatro ficheros de configuración son JSON,
@@ -179,28 +188,50 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 5 · Instrumentación y CLI
 
-- [ ] **T-012 · Un payload desconocido se marca como desconocido con sus claves** (AC-10)
+- [x] **T-012 · Un payload desconocido se marca como desconocido con sus claves** (AC-10)
   - **RED**: alimentar el adaptador con una forma desconocida; la línea escrita lo marca y adjunta las
     claves. Falla porque `_payload.py` no existe.
   - **Toca**: `instrumentacion/_payload.py`, `test/payload.test.py`
   - **DONE**: `python3 -m unittest test.payload_test -v`
+  - **DONE**: `npm test` (corre las dos suites). **La tarea decía `python3 -m unittest
+    test.payload_test`, que no ejecuta nada**: falla con error de módulo. Caso 2 del contrato de
+    parada, en la propia lista de tareas. La que corre es `discover -s test -p 'test_*.py'`.
+  - **Mutaciones**: la sonda no adjunta las claves → caen 2 · todo esquema se da por conocido →
+    caen 4.
 
-- [ ] **T-013 · Un campo irresoluble queda nulo, nunca por defecto** (AC-11)
+- [x] **T-013 · Un campo irresoluble queda nulo, nunca por defecto** (AC-11)
   - **RED**: payload sin identificador de agente; el campo es nulo y **no** toma el valor del agente
     principal. Este es el caso que la retrospectiva anterior enseñó a temer.
   - **Toca**: `instrumentacion/_payload.py`, `test/payload.test.py`
   - **DONE**: `python3 -m unittest test.payload_test -v`
+  - **DONE**: `npm test`.
+  - **Mutación**: rellenar `agent` con `"main"` cuando no viene → caen 3, y `npm test` sale 1.
+    Es la mutación que reproduce el defecto original: el ratio de delegación pasaría a medir al
+    adaptador en vez de al repositorio.
 
-- [ ] **T-014 · Los hooks salen 0 ante entrada inválida** (AC-12)
+- [x] **T-014 · Los hooks salen 0 ante entrada inválida** (AC-12)
   - **RED**: tres entradas inválidas —no-JSON, vacía, tipo inesperado— por cada hook.
   - **Toca**: `instrumentacion/*.py`, `test/payload.test.py`
   - **DONE**: `python3 -m unittest test.payload_test -v`
+  - **DONE**: `npm test`.
+  - **El primer test de esta tarea no probaba lo que decía.** Quitar el `try/except` de un hook lo
+    dejaba verde: ninguna de las entradas llegaba a lanzar, porque el adaptador ya se traga los
+    errores de JSON por dentro. Lo descubrió la mutación, no la revisión. Se añadió un caso con el
+    destino apuntando a un fichero en vez de a un directorio —escribir ahí sí lanza— y con un
+    payload de ruta **relativa**, porque con una absoluta de otro árbol el vigía de delegación sale
+    antes de llegar al punto que puede fallar.
+  - **Mutación**: quitar la red de seguridad de cualquiera de los dos hooks → cae 1 en cada caso.
 
-- [ ] **T-015 · `sync` y `check` funcionan de punta a punta** (AC-13, AC-14)
+- [x] **T-015 · `sync` y `check` funcionan de punta a punta** (AC-13, AC-14)
   - **RED**: sobre el fixture, `sync` produce los destinos y `check` sale 0; tocar un generado a mano
     pone `check` a 1.
   - **Toca**: `src/cli.mjs`, `test/cli.test.mjs`
   - **DONE**: `node --test test/cli.test.mjs`
+  - **DONE**: `npm test` → 96 casos JS + 14 Python.
+  - **`sync` y `check` derivan de la misma función.** Si cada uno construyera lo suyo acabarían
+    discrepando, y el que diría que todo está bien sería el `check`.
+  - **Mutación**: que `check` compruebe existencia y no contenido → caen 3. Es la mutación obvia y
+    la que deja pasar justo el caso que importa: alguien editó el generado a mano y sigue ahí.
 
 ## Fase 6 · El proyecto de referencia
 
