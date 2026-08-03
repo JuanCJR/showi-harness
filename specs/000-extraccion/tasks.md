@@ -347,7 +347,18 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 - [ ] **T-021 · Proyección de specs y detección de deriva** (D5)
 - [ ] **T-022 · CI: instalación fijada, ausencia de deriva, integridad**
 - [ ] **T-023 · `update` no toca el perfil ni el registro de defectos** (AC-16, AC-17)
-- [ ] **T-024 · `doctor`: declarado × presente × habilitado**
+- [x] **T-024 · `doctor`: declarado × presente × habilitado**
+  - **Toca**: `src/doctor.mjs`, `src/cli.mjs`, `test/doctor.test.mjs`
+  - **RED**: 10/11 por aserción. **DONE**: `npm test` → 131/131.
+  - **Encontró el defecto en su primera ejecución sobre el proyecto real**: tres servidores MCP
+    —`context7`, `coderag`, `postgres`— que **los tres roles declaran obligatorios** y que están
+    apagados en `.claude/settings.local.json`, un fichero que **gana sobre el del proyecto y no está
+    en el repositorio**. Es exactamente el cruce que dejó tres skills muertas durante siete specs.
+  - **Los avisos no hacen fallar el comando, solo los errores.** Degradado no es roto y no medido no
+    es cero; si un aviso saliera con 1, se acabarían silenciando todos y con ellos los errores.
+  - **La distinción que justifica el comando entero**: sin registro dice «no medido — que no es lo
+    mismo que cero». Un cero de un instrumento desconectado se cita con la misma confianza que uno
+    real, y esa confusión costó dos conclusiones falsas.
 - [ ] **T-025 · Instalación en un repositorio vacío** (AC-15)
 
 > Las tareas de estas tres fases se detallan al llegar. Escribirlas ahora fijaría formas de datos que

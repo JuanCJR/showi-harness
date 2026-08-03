@@ -19,6 +19,7 @@ import { hooksConfig, mcpConfig, permisosConfig, rulesyncConfig } from './config
 import { render } from './render.mjs';
 import { bloquesDeModelo } from './roles.mjs';
 import { validar } from './esquema.mjs';
+import { diagnosticar, formatear } from './doctor.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
 const VERSION = JSON.parse(readFileSync(join(AQUI, 'package.json'), 'utf8')).version;
@@ -242,6 +243,17 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
       // Va **entre** `rulesync install` y `rulesync generate`.
       const { corregidas } = normalizarSkills(proyecto);
       console.log(`showi normaliza · ${corregidas.length} skill(s) corregida(s)`);
+    } else if (orden === 'doctor') {
+      const informe = diagnosticar(proyecto);
+      console.log(formatear(informe));
+      const errores = informe.secciones.flatMap((s) => s.hallazgos).filter((h) => h.nivel === 'error');
+      // Los avisos **no** hacen fallar: degradado no es roto, y no medido no es cero. Si un aviso
+      // saliera con 1, se acabarían silenciando todos y con ellos los errores de verdad.
+      if (errores.length) {
+        console.error(`\nshowi doctor · ${errores.length} error(es)`);
+        process.exit(1);
+      }
+      console.log('\nshowi doctor · sin errores');
     } else if (orden === 'check') {
       const { problemas } = comprobar(proyecto);
       if (problemas.length === 0) {
@@ -252,7 +264,7 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
         process.exit(1);
       }
     } else {
-      console.error('uso: showi <sync|normaliza|check> [proyecto]');
+      console.error('uso: showi <sync|normaliza|check|doctor> [proyecto]');
       process.exit(2);
     }
   } catch (e) {
