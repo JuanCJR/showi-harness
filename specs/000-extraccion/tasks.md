@@ -278,12 +278,32 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 7 · Limpieza
 
-- [ ] **T-017 · Una sola fuente para las skills en el proyecto de referencia** (AC-1..AC-4)
-  - **RED**: el script de integridad sobre las rutas de `RUTAS_SKILL` del proyecto de referencia falla
-    **hoy** — es el fallo 2 de la spec, y su rojo inicial es la prueba de que el defecto existía.
-    Conservar esa salida.
-  - **Toca**: en el repositorio de referencia: el lock obsoleto y las copias contaminadas
-  - **DONE**: `bash test/integridad.sh` sobre el proyecto de referencia
+- [x] **T-017 · Una sola fuente para las skills en el proyecto de referencia** (AC-1..AC-4)
+  - **RED conservado**: `18 ausencia(s) · 2 fuga(s) · 2 divergencia(s)`, salida completa en
+    `docs/evidencia/2026-08-03-defecto-vivo.md`.
+  - **DONE**: `bash test/integridad.sh <proyecto>` → **«Sin problemas»**, las cuatro skills con el
+    mismo cuerpo en los seis destinos. Y `showi check` → sin deriva.
+  - Se borró `skills-lock.json`: registraba 15 skills donde había 17 y apuntaba a orígenes que el
+    método propio ya había reemplazado. Lo sustituye `rulesync.lock`, con SHA e integridad.
+
+  **CUATRO DEFECTOS, y ninguno se veía sin generar de verdad los 84 ficheros:**
+
+  1. **Los permisos no llegaban a ninguna herramienta.** rulesync espera el fichero envuelto en
+     `permission`; se emitía pelado y lo rechazaba entero. Los `deny` de secretos y de `git push`
+     no estaban puestos en ningún sitio, y el error se perdía entre el resto de la salida. La forma
+     correcta se aprendió **importando desde una configuración real**, no adivinando.
+  2. **«Reglas de código» salía cinco veces** en el fichero raíz — el mismo bloque anidado consigo
+     mismo que ya había corregido en la plantilla de cierre, repetido en otra escrita después.
+     Ahora hay un **guardián sobre todas las plantillas**: cometerlo dos veces significa que
+     arreglarlo no basta.
+  3. **`sync` escribía `rulesync.jsonc` dentro de `.rulesync/`** y rulesync lo busca en la raíz.
+  4. **Faltaban las reglas del proyecto**: nada generaba el fichero raíz ni los globs por
+     territorio. Un solo campo `globs:` alimenta ahora `paths:`, `applyTo:` e `inclusion: fileMatch`.
+
+  **Y dos requisitos operativos que no estaban escritos**: `rulesync install` necesita
+  `GITHUB_TOKEN` —sin él, 403 y no instala **ninguno**, ni el método—, y `showi normaliza` tiene
+  que correr entre instalar y repartir, porque hay skills publicadas cuyo `name` no coincide con su
+  directorio y **Kiro aborta la generación entera** por eso.
 
 ## Fase 8 · Kiro
 
