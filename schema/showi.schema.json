@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/JuanCJR/showi-harness/schema/showi.schema.json",
+  "title": "showi.yml",
+  "description": "Perfil del proyecto. El único fichero que escribe una persona y el único que showi no sobreescribe.",
+  "type": "object",
+  "required": ["showi", "proyecto", "roles", "herramientas"],
+  "properties": {
+    "showi": {
+      "description": "Contrato con el harness.",
+      "type": "object",
+      "required": ["esquema", "metodo"],
+      "properties": {
+        "esquema": {
+          "description": "Versión del esquema de este fichero. La suben las migraciones, no una persona.",
+          "type": "integer"
+        },
+        "metodo": {
+          "description": "Tag del repositorio del método. Lo sube `showi update`.",
+          "type": "string"
+        },
+        "idioma": { "type": "string" }
+      }
+    },
+    "proyecto": {
+      "type": "object",
+      "required": ["nombre", "slug"],
+      "properties": {
+        "nombre": { "type": "string" },
+        "slug": { "type": "string" },
+        "dominio": { "type": "string" },
+        "gestor_paquetes": { "type": "string" },
+        "scope_paquetes": { "type": "string" },
+        "monorepo": { "type": "boolean" }
+      }
+    },
+    "roles": {
+      "description": "Un fichero de subagente por entrada. La clave es el nombre del rol.",
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["plantilla", "descripcion"],
+        "properties": {
+          "plantilla": { "type": "string" },
+          "descripcion": {
+            "description": "Lo que decide cuándo se invoca este rol. No es decorativo.",
+            "type": "string"
+          },
+          "territorio": { "type": "array", "items": { "type": "string" } },
+          "no_toca": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "herramientas": {
+      "type": "object",
+      "required": ["activas"],
+      "properties": {
+        "activas": {
+          "description": "Destinos. `agentsmd` es obligatorio si `kiro-ide` está: Kiro no tiene fichero raíz propio en ámbito de proyecto.",
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

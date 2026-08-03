@@ -1,5 +1,5 @@
 {
-  "name": "showi-harness",
+  "name": "@showi/harness",
   "version": "0.0.0",
   "description": "El método —SDD, TDD, contrato de parada y verificación— llevado a cualquier proyecto y a cualquier herramienta desde una sola fuente",
   "type": "module",
@@ -16,7 +16,7 @@
     "schema"
   ],
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test 'test/**/*.test.mjs'"
   },
   "engines": {
     "node": ">=22"
@@ -37,5 +37,8 @@
     "rulesync": {
       "optional": true
     }
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

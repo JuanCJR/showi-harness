@@ -3,7 +3,7 @@
 El método —especificación antes que código, TDD, contrato de parada y verificación— empaquetado para
 llevarlo a cualquier proyecto y a cualquier herramienta.
 
-> Paquete `showi-harness`, comando `showi`.
+> Paquete `@showi/harness`, comando `showi`, repositorio `showi-harness`.
 
 Un proyecto declara su perfil en un `showi.yml`. De ahí salen los ficheros que cada herramienta sabe
 leer: Claude Code, Cursor, GitHub Copilot, Kiro, opencode y el `AGENTS.md` genérico. **Una sola fuente,

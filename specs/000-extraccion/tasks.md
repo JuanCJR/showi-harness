@@ -12,24 +12,49 @@ algo: un comando que no corre nada sale en verde y no significa nada.
 
 ## Fase 1 · El motor
 
-- [ ] **T-001 · El motor de plantillas interpola, itera e incluye**
+- [x] **T-001 · El motor de plantillas interpola, itera e incluye**
   - **RED**: `test/render.test.mjs` — un caso por constructo; falla porque `src/render.mjs` no existe
     todavía. *No vale como RED un fallo de importación por fichero ausente*: se crea `render.mjs`
     exportando la función con cuerpo vacío, y el rojo es de aserción.
   - **Toca**: `src/render.mjs`, `test/render.test.mjs`
-  - **DONE**: `node --test test/render.test.mjs`
+  - **DONE**: `npm test` — 16/16. RED previo: 15/16 por aserción, 0 por resolución.
+  - **Mutación** del único caso que pasó contra el andamio (`no emite cuando la lista tiene
+    elementos`): forzar el bloque invertido a emitir siempre → cae ese caso y solo ese.
 
-- [ ] **T-002 · El motor no evalúa código y no tiene condicionales** (D2)
+- [x] **T-002 · El motor no evalúa código y no tiene condicionales** (D2)
   - **RED**: un caso alimenta la plantilla con una expresión y comprueba que se emite literal, no
     evaluada.
-  - **Toca**: `test/render.test.mjs`, `src/render.mjs`
-  - **DONE**: `node --test test/render.test.mjs`
+  - **Toca**: `src/render.mjs`, **`test/render-sin-logica.test.mjs`** (desvío, ver abajo)
+  - **DONE**: `npm test` — 26/26. RED previo: 5/10 por aserción.
+  - **Halló un defecto de T-001**: `resolver` caminaba la cadena de prototipos, así que
+    `{{constructor}}` volcaba `function Object() { [native code] }` y `{{toString}}` el método
+    heredado. Corregido: solo claves propias. Sin este test, el defecto habría llegado a la
+    documentación de las seis herramientas.
 
-- [ ] **T-003 · El esquema de `showi.yml` se valida y falla con el campo que falta**
+- [x] **T-003 · El esquema de `showi.yml` se valida y falla con el campo que falta**
   - **RED**: un perfil al que le falta un campo obligatorio produce un error que **nombra el campo**;
     falla porque `esquema.mjs` no valida nada.
   - **Toca**: `src/esquema.mjs`, `schema/showi.schema.json`, `test/esquema.test.mjs`
-  - **DONE**: `node --test test/esquema.test.mjs`
+  - **DONE**: `npm test` — 36/36. RED previo: 9/10 por aserción.
+  - **Mutaciones**: obligatorios invertidos → caen 9 · el vigía de palabras no vigila → cae 1 ·
+    solo se reporta el primer problema → cae 1.
+
+### Desvíos de la fase 1, declarados
+
+1. **T-002 estrenó `test/render-sin-logica.test.mjs`**, que no estaba en sus artefactos: la tarea
+   decía ampliar `test/render.test.mjs`. Se separó a propósito —«qué hace el motor» y «qué
+   deliberadamente no hace» son dos preguntas—, pero es un artefacto no declarado y por eso queda
+   escrito aquí en vez de pasar callando.
+2. **El validador lee `schema/showi.schema.json` en vez de duplicar sus reglas en código.** No estaba
+   previsto en la tarea. Se hizo así porque dos definiciones de la misma forma divergen, y de ahí
+   sale la propiedad más valiosa del fichero: una palabra de esquema no implementada **estalla** en
+   vez de ignorarse, que es lo que impide un esquema que parece estricto y no valida nada.
+3. **Se corrigió el script `test` de `package.json`**, que no estaba en los artefactos de ninguna
+   tarea. `node --test test/` no corre el directorio: lo resuelve como módulo y muere con
+   `MODULE_NOT_FOUND`. Falló ruidosamente, no en falso, pero no ejecutaba ni un caso.
+4. **Una comprobación de instrumento mía salió inerte** y hubo que rehacerla: la primera mutación que
+   probé no la miraba ningún test, así que «26/26 con la mutación puesta» no probaba nada. Las tres
+   que quedan escritas sí matan casos (9, 1 y 2).
 
 ## Fase 2 · El método como fuente instalable
 
