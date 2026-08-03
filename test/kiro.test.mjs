@@ -76,10 +76,15 @@ describe('AC-18 · lo generado para Kiro es sintácticamente válido', { skip: !
     }
   });
 
-  it('los subagentes llevan el modelo que la tabla del perfil les asigna', () => {
-    // Que Kiro **honre** este campo es otra cosa, y es el paso 5 del guion manual (AC-20).
+  it('a los subagentes de Kiro NO se les escribe modelo — verificado, no supuesto', () => {
+    // Este caso afirmaba lo contrario hasta que se ejecutó el paso 5 del guion manual: **Kiro da
+    // error con el valor del modelo**. R2 queda resuelto en negativo, y `kiro-ide` pasa a bloque
+    // vacío en la tabla del perfil, igual que Copilot.
+    //
+    // Escribirlo igualmente sería peor que no escribirlo: rompe la sesión en vez de ignorarse en
+    // silencio. Se hereda el modelo de la sesión base.
     for (const f of readdirSync(k('agents')).filter((x) => x.endsWith('.md'))) {
-      assert.match(leer('agents', f), /^model: \S+$/m, `${f} no declara modelo`);
+      assert.doesNotMatch(leer('agents', f), /^model:/m, `${f} declara modelo y Kiro no lo acepta`);
     }
   });
 
