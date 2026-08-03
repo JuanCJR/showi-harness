@@ -20,6 +20,7 @@ import { render } from './render.mjs';
 import { bloquesDeModelo } from './roles.mjs';
 import { validar } from './esquema.mjs';
 import { diagnosticar, formatear } from './doctor.mjs';
+import { actualizar, iniciar } from './ciclo.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
 const VERSION = JSON.parse(readFileSync(join(AQUI, 'package.json'), 'utf8')).version;
@@ -237,7 +238,14 @@ export function comprobar(proyecto) {
 if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) {
   const [orden, proyecto = process.cwd()] = process.argv.slice(2);
   try {
-    if (orden === 'sync') {
+    if (orden === 'init') {
+      const [nombre, slug] = process.argv.slice(4);
+      iniciar(proyecto, { nombre, slug });
+    } else if (orden === 'update') {
+      const version = process.argv[4];
+      if (!version) throw new Error('uso: showi update <proyecto> <version>');
+      actualizar(proyecto, version, { forzar: process.argv.includes('--forzar') });
+    } else if (orden === 'sync') {
       sincronizar(proyecto);
     } else if (orden === 'normaliza') {
       // Va **entre** `rulesync install` y `rulesync generate`.
@@ -264,7 +272,7 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
         process.exit(1);
       }
     } else {
-      console.error('uso: showi <sync|normaliza|check|doctor> [proyecto]');
+      console.error('uso: showi <init|sync|normaliza|check|doctor|update> [proyecto] [...]');
       process.exit(2);
     }
   } catch (e) {

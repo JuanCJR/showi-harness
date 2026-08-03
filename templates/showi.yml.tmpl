@@ -1,0 +1,72 @@
+# Perfil de {{nombre}} — el único fichero que edita una persona.
+# `showi sync` lo lee y de aquí sale todo lo demás. `showi` nunca lo sobreescribe.
+#
+# yaml-language-server: $schema=https://github.com/JuanCJR/showi-harness/raw/main/schema/showi.schema.json
+
+showi:
+  esquema: 1
+  metodo: "{{metodo}}"     # lo sube `showi update`, no se toca a mano
+  idioma: es
+
+proyecto:
+  nombre: {{nombre}}
+  slug: {{slug}}
+  dominio: >-
+    TODO: qué es este proyecto, en dos o tres líneas.
+
+documentos:
+  specs_dir: specs
+  specs_patron: "NNN-slug/{spec,plan,tasks,CHANGELOG}.md"
+  plantillas_dir: specs/_templates
+  indice: specs/README.md
+  seguimiento: IMPLEMENTATION.md
+  # Nace vacío a propósito: los defectos de otro proyecto no son los tuyos, y una regla con la
+  # historia equivocada se obedece peor que una sin historia.
+  registro_defectos: docs/harness/defectos.md
+
+herramientas:
+  # `agentsmd` da la raíz del método a Kiro; `agentsskills` puebla `.agents/skills/`.
+  activas: [claudecode, agentsmd, agentsskills]
+
+modelos:
+  defecto:
+    claudecode: { model: sonnet }
+
+roles:
+  orchestrator:
+    plantilla: orquestador
+    descripcion: >-
+      TODO: cuándo invocar este rol. Es lo que decide si se usa; no es decorativo.
+    identidad: >-
+      Eres quien especifica, planifica, delega y verifica. No escribes código de producción.
+    dominio: >-
+      TODO
+    stack: >-
+      TODO
+    verificacion:
+      - { cmd: "TODO: el comando que corre la suite", que: "" }
+
+  implementador:
+    plantilla: implementador
+    descripcion: >-
+      TODO: cuándo invocar este rol.
+    identidad: >-
+      Eres quien ejecuta. No eliges qué construir: ejecutas una tarea ya especificada, en TDD.
+    dominio: >-
+      TODO
+    territorio: ["src/**"]
+    fronteras: >-
+      TODO: dónde puedes escribir y dónde no.
+    stack: >-
+      TODO
+    tests:
+      - { nivel: "Unit", ruta: "src/**/*.test.*" }
+    verificacion:
+      - { cmd: "TODO", que: "" }
+
+instrumentacion:
+  habilitada: true
+  destino: .harness
+  hooks:
+    log_skill_usage: { activo: true }
+    delegation_watch: { activo: true }

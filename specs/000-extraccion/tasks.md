@@ -346,7 +346,14 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 - [ ] **T-021 · Proyección de specs y detección de deriva** (D5)
 - [ ] **T-022 · CI: instalación fijada, ausencia de deriva, integridad**
-- [ ] **T-023 · `update` no toca el perfil ni el registro de defectos** (AC-16, AC-17)
+- [x] **T-023 · `update` no toca el perfil ni el registro de defectos** (AC-16, AC-17)
+  - **Toca**: `src/ciclo.mjs`, `src/cli.mjs`, `test/ciclo.test.mjs`
+  - **RED**: 6/10 por aserción. **DONE**: `npm test` → 141/141.
+  - **AC-16 se comprueba por hash**, no a ojo: se sustituye la línea de versión por un centinela en
+    el antes y el después y se compara el resto. Cualquier otro cambio del perfil cae.
+  - **AC-17**: con un generado tocado a mano, `update` **para y nombra el fichero**, y el perfil
+    conserva la versión vieja — no escribe nada. Hay `--forzar`, pero hay que pedirlo.
+  - Es el contrato de parada aplicado a la herramienta que distribuye el contrato de parada.
 - [x] **T-024 · `doctor`: declarado × presente × habilitado**
   - **Toca**: `src/doctor.mjs`, `src/cli.mjs`, `test/doctor.test.mjs`
   - **RED**: 10/11 por aserción. **DONE**: `npm test` → 131/131.
@@ -359,7 +366,16 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
   - **La distinción que justifica el comando entero**: sin registro dice «no medido — que no es lo
     mismo que cero». Un cero de un instrumento desconectado se cita con la misma confianza que uno
     real, y esa confusión costó dos conclusiones falsas.
-- [ ] **T-025 · Instalación en un repositorio vacío** (AC-15)
+- [x] **T-025 · Instalación en un repositorio vacío** (AC-15)
+  - **DONE**: `showi init` sobre un `git init` vacío → 16 ficheros y `showi check · sin deriva`.
+  - **El perfil nace con marcadores `TODO`, no relleno**: uno con los datos de otro proyecto es peor
+    que uno vacío, porque parece configurado. Un test comprueba que no se cuela nada del proyecto de
+    referencia.
+  - **El registro de defectos nace vacío.** Los defectos de otro proyecto no son los tuyos, y una
+    regla con la historia equivocada se obedece peor que una sin historia.
+  - `init` **dice el paso que falta** —el método aún no está descargado— en vez de dejar que
+    `doctor` lo descubra como error. Un «listo» seguido de un error es la peor primera impresión
+    que puede dar una herramienta cuyo argumento entero es no mentir sobre su estado.
 
 > Las tareas de estas tres fases se detallan al llegar. Escribirlas ahora fijaría formas de datos que
 > todavía no existen, que es exactamente el exceso que la skill de SDD manda evitar.
