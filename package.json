@@ -1,6 +1,6 @@
 {
   "name": "@showi/harness",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description": "El método —SDD, TDD, contrato de parada y verificación— llevado a cualquier proyecto y a cualquier herramienta desde una sola fuente",
   "type": "module",
   "license": "MIT",

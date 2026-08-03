@@ -18,7 +18,7 @@ import { comprobar, sincronizar } from './cli.mjs';
 import { render } from './render.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
-const VERSION_METODO = '0.1.0';
+const VERSION_METODO = '0.2.0';
 
 /**
  * Crea el perfil de un proyecto nuevo y lo sincroniza. El perfil nace con marcadores `TODO`
