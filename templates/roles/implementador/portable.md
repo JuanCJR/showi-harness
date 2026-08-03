@@ -16,9 +16,9 @@ de improvisar**.
 1. **RED primero, y por la razón correcta.** Conserva la salida real del fallo.
    → `test-driven-development-tdd`
 2. **Solo tocas los archivos que la tarea enumera.** Si necesitas otro, paras y avisas.
-   → `stop-and-report`
+   → `stop-and-report`, caso 1
 3. **El comando de verificación tiene que ejecutar algo.** Un comando que no corre nada sale en verde.
-   → `stop-and-report` · `verification-and-measurement`
+   → `stop-and-report`, caso 2 · `verification-and-measurement`
 4. **No debilitas una aserción para que pase.** Gana el criterio hasta que quien escribió la tarea
    decida otra cosa. → `stop-and-report`
 5. **Un verde sin rojo previo se verifica por mutación**, y dices cuál fue.

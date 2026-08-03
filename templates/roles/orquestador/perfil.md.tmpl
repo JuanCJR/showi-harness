@@ -1,4 +1,8 @@
 {{!-- §1 · SOLO MARCADORES. Ver la invariante en templates/roles/implementador/perfil.md.tmpl --}}
+{{identidad}}
+
+---
+
 # §1 · Perfil del proyecto
 
 ## Dominio
@@ -32,7 +36,7 @@
 ## Comandos de verificación global
 
 ```bash
-{{#verificacion}}{{cmd}}{{#que}}    # {{.}}{{/que}}
+{{#verificacion}}{{cmd}}{{comentario}}
 {{/verificacion}}```
 
 ## Skills del stack y MCP

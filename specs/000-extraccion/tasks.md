@@ -253,13 +253,28 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 6 · El proyecto de referencia
 
-- [ ] **T-016 · El perfil del proyecto de referencia reproduce sus roles actuales** (AC-7)
-  - **RED**: escribir su `showi.yml`, regenerar y comparar con los ficheros de agente actuales. El
-    rojo inicial es el diff completo.
-  - **Toca**: en el repositorio de referencia, `showi.yml`; aquí, `test/fixtures/`
-  - **DONE**: diff revisado línea a línea; la única diferencia admisible es reordenación y el enlace
-    del registro de defectos.
-  - **Nota**: verificación **de una vez**, no de regresión (ver AC-7).
+- [x] **T-016 · El perfil del proyecto de referencia reproduce sus roles actuales** (AC-7)
+  - **Toca**: en el repositorio de referencia, `showi.yml`; aquí, `test/fixtures/`, plantillas de rol,
+    `src/cli.mjs`, `test/plantillas.test.mjs`
+  - **DONE**: comparación **a nivel de palabra** entre el §1 de cada agente actual y el generado. No
+    línea a línea: el texto se reajusta al pasar por el perfil y un diff de líneas no distingue un
+    reajuste de una pérdida.
+  - **Resultado**: cero pérdidas. Lo que no aparece en el generado es, en los tres roles, deliberado:
+    los marcadores `SUSTITUIR AL PORTAR` y el bloque de portabilidad (sobran en un fichero generado),
+    `.claude/settings.json` desacoplado a «la configuración», y `find-docs`.
+
+  **CUATRO HALLAZGOS. El esquema se quedaba corto en tres sitios y había un defecto en el motor:**
+
+  | # | Qué faltaba | Cómo se arregló |
+  |---|---|---|
+  | 1 | El párrafo de **identidad** del rol («Eres el…») no tenía campo | campo `identidad` |
+  | 2 | El backend tiene **dos secciones con título propio** —«Regla dura: DTO» y «Seguridad y datos»—; el esquema solo daba una lista plana de reglas, y se perdían **28 líneas** de reglas de seguridad | `reglas_casa` → `secciones_casa: [{titulo, intro, reglas}]` |
+  | 3 | Los números de caso de las puertas (`caso 1`, `caso 2`) se habían caído al partir lo portable | restaurados |
+  | 4 | **`reporta_ademas` se renderizaba tres veces**: anidé un bloque con el mismo nombre dentro de sí mismo y el motor conserva el contexto de fuera, así que la lista interna se repetía una vez por elemento | bandera `tiene_extras` precalculada, que es lo que D2 manda cuando una plantilla necesitaría lógica |
+
+  **Y un defecto del proyecto de referencia, no del harness**: `frontend.md` y `backend.md` declaran
+  obligatoria una skill **`find-docs` que no existe**, y llevan siete specs haciéndolo. Es el cruce
+  declarado × presente que `doctor` (T-024) existe para hacer. No se restaura: era el defecto.
 
 ## Fase 7 · Limpieza
 

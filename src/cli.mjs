@@ -50,6 +50,13 @@ export function derivar(perfil) {
     const ctx = {
       ...rol,
       nombre,
+      // Precalculado, no decidido en la plantilla: el motor no tiene condicionales a propósito.
+      tiene_extras: rol.reporta_ademas?.length ? [true] : [],
+      tests: (rol.tests ?? []).map((t) => ({ ...t, nota: t.nota ?? '' })),
+      verificacion: (rol.verificacion ?? []).map((v) => ({
+        ...v,
+        comentario: v.que ? `    # ${v.que}` : '',
+      })),
       registro_defectos: perfil.documentos?.registro_defectos,
       documentos: perfil.documentos,
       bloques_de_modelo: bloquesDeModelo(nombre, perfil.modelos ?? {}, activas),
@@ -60,15 +67,20 @@ export function derivar(perfil) {
     const t = rol.plantilla;
     salida.set(
       `.rulesync/subagents/${nombre}.md`,
-      render(plantilla('roles', t, 'frontmatter.yml.tmpl'), ctx) +
-        '\n' +
-        render(plantilla('roles', t, 'perfil.md.tmpl'), ctx) +
-        '\n---\n\n' +
-        metodoComun +
-        '\n' +
-        plantilla('roles', t, 'portable.md') +
-        '\n---\n\n' +
+      [
+        render(plantilla('roles', t, 'frontmatter.yml.tmpl'), ctx),
+        render(plantilla('roles', t, 'perfil.md.tmpl'), ctx),
+        '---',
+        metodoComun,
+        plantilla('roles', t, 'portable.md'),
+        '---',
         render(plantilla('roles', t, 'cierre.md.tmpl'), ctx),
+      ]
+        .map((trozo) => trozo.trim())
+        .join('\n\n')
+        // Normaliza el espaciado del ensamblado: un bloque opcional vacío deja huecos, y un
+        // documento con huecos de tres líneas se lee como si le faltara algo.
+        .replace(/\n{3,}/g, '\n\n') + '\n',
     );
   }
 

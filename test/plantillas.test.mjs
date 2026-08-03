@@ -56,12 +56,12 @@ describe('lo del perfil no lleva prosa de ningún proyecto', () => {
   const CENTINELA = {
     nombre: 'ZZROL', descripcion: 'ZZDESC', dominio: 'ZZDOM', fronteras: 'ZZFRONT',
     stack: 'ZZSTACK', bloques_de_modelo: 'ZZMOD', registro_defectos: 'ZZREG',
-    tests_minimos: 'ZZMIN',
+    tests_minimos: 'ZZMIN', identidad: 'ZZIDENT', tiene_extras: ['x'],
     tests: [{ nivel: 'ZZNIV', ruta: 'ZZRUTA', nota: 'ZZNOTA' }],
-    verificacion: [{ cmd: 'ZZCMD', que: 'ZZQUE' }],
+    verificacion: [{ cmd: 'ZZCMD', que: 'ZZQUE', comentario: 'ZZCOM' }],
     skills_stack: [{ nombre: 'ZZSKILL', cuando: 'ZZCUANDO' }],
     mcp: [{ nombre: 'ZZMCP', cuando: 'ZZCUANDO2' }],
-    reglas_casa: ['ZZREGLA'],
+    secciones_casa: [{ titulo: 'ZZTIT', intro: 'ZZINTRO', reglas: ['ZZREGLA'] }],
     reporta_ademas: ['ZZEXTRA'],
     ejecutores: [{ nombre: 'ZZEJ', territorio: 'ZZTERR' }],
     documentos: {

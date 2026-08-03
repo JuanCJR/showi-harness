@@ -4,6 +4,10 @@
   ningún proyecto concreto. Todo lo sustantivo entra por `showi.yml`. Los encabezados y las cabeceras
   de tabla son estructura, no contenido.
 --}}
+{{identidad}}
+
+---
+
 # §1 · Perfil del proyecto
 
 ## Dominio
@@ -20,19 +24,17 @@
 
 ## Dónde vive cada tipo de test
 
-| Nivel | Ruta |
-|---|---|
-{{#tests}}| {{nivel}} | `{{ruta}}` |{{^nota}}
-{{/nota}}{{#nota}} · {{.}}
-{{/nota}}{{/tests}}
-{{#tests_minimos}}
-{{.}}
+| Nivel | Ruta | Nota |
+|---|---|---|
+{{#tests}}| {{nivel}} | `{{ruta}}` | {{nota}} |
+{{/tests}}
+{{#tests_minimos}}{{.}}
 {{/tests_minimos}}
 
 ## Comandos de verificación
 
 ```bash
-{{#verificacion}}{{cmd}}{{#que}}    # {{.}}{{/que}}
+{{#verificacion}}{{cmd}}{{comentario}}
 {{/verificacion}}```
 
 ## Skills del stack y MCP
@@ -48,7 +50,10 @@
 {{/skills_stack}}{{#mcp}}| MCP `{{nombre}}` | {{cuando}} |
 {{/mcp}}
 
-## Reglas de la casa
+{{#secciones_casa}}## {{titulo}}
 
-{{#reglas_casa}}- {{.}}
-{{/reglas_casa}}
+{{#intro}}{{.}}
+
+{{/intro}}{{#reglas}}- {{.}}
+{{/reglas}}
+{{/secciones_casa}}
