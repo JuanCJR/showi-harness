@@ -318,11 +318,25 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
     abortar a Kiro), y que los scripts que la configuración de hooks nombra **existan** — uno que no
     existe no falla, simplemente no mide, y ese silencio se lee como un cero.
 
-- [~] **T-019 · Guion de aceptación manual en Kiro** (AC-19) · **guion escrito, pendiente de
-      ejecutar**: `docs/aceptacion-kiro.md`. Siete pasos, de los que **tres** distinguen «el fichero
-      existe» de «la herramienta lo lee». Necesita abrir Kiro; no lo puede hacer un test.
+- [~] **T-019 · Guion de aceptación manual en Kiro** (AC-19) · **PARCIAL Y APARCADO por decisión**
+      del 2026-08-03. `docs/aceptacion-kiro.md`.
 
-- [ ] **T-020 · Resolver los dos supuestos no verificados sobre Kiro** (AC-20)
+  **Verificado**: carga el método y los ficheros de steering (paso 1) · ve los tres subagentes
+  (paso 4) · **no honra `model:`** (paso 5, R2 resuelto en negativo y aplicado en el harness).
+
+  **NO verificado, y no se cuenta como cubierto**: si `inclusion: fileMatch` **filtra de verdad** o
+  está siempre encendido (paso 3-bis) · si los hooks **disparan** en Kiro y con qué forma de payload
+  (paso 6, **R1 sigue abierto**) · si registra las invocaciones de skill (paso 7).
+
+  **Consecuencia, dicha en voz alta**: de las seis herramientas, la instrumentación solo está
+  demostrada en una. Para las otras cinco —Kiro incluida— `doctor` debe reportar *no medido*, que
+  **no es lo mismo que cero**. Esa distinción es el motivo por el que existen estos hooks.
+
+- [~] **T-020 · Resolver los dos supuestos no verificados sobre Kiro** (AC-20) · **uno sí, uno no**.
+      R2 (¿honra el modelo?) resuelto en negativo y aplicado. **R1 (¿qué payload manda a un hook?)
+      sigue abierto**: necesita el paso 6, que requiere abrir Kiro.
+
+- [ ] ~~T-020 original~~
   - **RED**: el modo sonda de T-012 aplicado a Kiro; y comprobar si respeta el campo de modelo.
   - **Toca**: `docs/aceptacion-kiro.md`, y `instrumentacion/_payload.py` si la sonda revela el esquema
   - **DONE**: el documento responde a los dos **con evidencia, aunque la respuesta sea negativa**. Si

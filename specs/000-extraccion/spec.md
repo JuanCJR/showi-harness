@@ -193,6 +193,9 @@ soportado, se documenta como degradado —igual que en AC-9— y se retira de la
 Declarado aquí para que nadie lo cuente como cobertura ni escriba un test que lo simule:
 
 - **AC-19** y **AC-20** — el comportamiento real de Kiro. Guion manual con evidencia pegada.
+  **Estado al 2026-08-03: parcial.** Resuelto que no honra el modelo del subagente; **sin resolver**
+  si el filtro por fichero filtra y si los hooks disparan. Aparcado por decisión, no por olvido: se
+  cuenta como no cubierto.
 - El comportamiento real de las otras herramientas destino. Se cubre con el mismo modo sonda de AC-10:
   no se afirma que funcionan hasta que hay una línea de registro con esquema reconocido.
 

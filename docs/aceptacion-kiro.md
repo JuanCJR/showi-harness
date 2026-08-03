@@ -169,24 +169,62 @@ backend—: «objetivo interactivo ≥ 24 × 24 px», «nombre accesible», «sl
 **a)** Abre `apps/web/src/app/AppShell.tsx` y pregunta, sin más contexto:
 
 > `¿cuál es el tamaño mínimo de un objetivo interactivo en este proyecto, y por qué las consultas de
-> los tests van por nombre y no por contenido?`
+los tests van por nombre y no por contenido?`
 
 **b)** Abre `apps/api/src/main.ts` y pregunta **exactamente lo mismo**.
 
-| Resultado | Qué significa |
-|---|---|
-| **(a) responde con las dos cosas · (b) dice que no le consta** | `fileMatch` **filtra**. Es el único resultado que lo demuestra. |
-| (a) responde · (b) también responde | El steering está **siempre encendido**: la separación de territorios es decorativa. |
-| (a) no responde | El steering territorial **no se carga nunca**, y el paso 2 daba un falso positivo. |
+| Resultado                                                      | Qué significa                                                                       |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| **(a) responde con las dos cosas · (b) dice que no le consta** | `fileMatch` **filtra**. Es el único resultado que lo demuestra.                     |
+| (a) responde · (b) también responde                            | El steering está **siempre encendido**: la separación de territorios es decorativa. |
+| (a) no responde                                                | El steering territorial **no se carga nunca**, y el paso 2 daba un falso positivo.  |
 
 ```
 salida (a) en frontend:
+Está todo en las reglas del territorio. Las dos respuestas:
+
+Tamaño mínimo: 24 × 24 px
+
+La regla lo fija explícitamente referenciando el criterio de éxito WCAG 2.5.8 (Target Size — Minimum). Ese SC establece que cualquier objetivo interactivo que no sea inline debe tener al menos 24 × 24 px de área de clic o toque. En
+AppShell.tsx
+ puedes ver que el botón "Cerrar sesión" tiene min-h-9 (36 px), que cumple con margen; y el botón de colapsar sidebar tiene px-2 py-1, que en Tailwind con la tipografía base también queda por encima del mínimo.
+
+Por qué los tests consultan por nombre y no por contenido
+
+La regla lo dice de forma directa: filtrar por el texto que un elemento muestra en ese momento no lee su nombre accesible, así que el test puede quedar en verde aunque hayas introducido exactamente la regresión que pretendía detectar.
+
+El caso concreto: si buscas un landmark o región por su texto visible —getByText('Árbol de documentos')— y ese texto cambia de idioma, desaparece, o se reemplaza por un icono, el selector falla… pero no por accesibilidad, sino por el texto. Peor: si el texto no cambia pero el aria-label se rompe o desaparece, el test sigue en verde. Quedar verde ante esa regresión es exactamente la trampa.
+
+Querying por nombre accesible —getByRole('navigation', { name: 'Árbol de documentos' })— lee el árbol de accesibilidad real, el mismo que ve un lector de pantalla. Si el aria-label se rompe, el test falla. Si el rol desaparece, también. Eso es lo que el test tiene que verificar.
 
 
 salida (b) en backend:
+Son dos preguntas de metodología/estándares, no de código a editar. Las respondo directamente.
+
+Tamaño mínimo de objetivo interactivo
+
+La regla estándar de accesibilidad que aplica aquí es 44×44 CSS px (WCAG 2.5.5, nivel AAA) como objetivo recomendado, o 24×24 CSS px como mínimo aceptable en WCAG 2.2 criterio 2.5.8 (nivel AA). En proyectos con Tailwind, eso se traduce típicamente en min-h-[44px] min-w-[44px] o usando las clases de padding para ampliar el área de toque aunque el visual sea más pequeño.
+
+Para confirmar si este proyecto tiene un valor concreto fijado en sus steering files o reglas de accesibilidad, puedo buscarlo — pero no hay nada definido explícitamente en los archivos que tengo en contexto ahora mismo.
+
+Por qué los tests consultan por nombre (rol/label) y no por contenido
+
+Esto viene del principio de Testing Library: las queries van por lo que el usuario percibe, en este orden de preferencia:
+
+getByRole (accesibilidad semántica — lo más robusto)
+getByLabelText (formularios)
+getByPlaceholderText
+getByText (contenido visible)
+getByTestId (último recurso)
+La razón práctica es que el contenido es frágil: un cambio de copy rompe el test sin que el comportamiento haya cambiado. El nombre accesible (role + accessible name) está ligado a la semántica del componente, no a su literal de texto, así que:
+
+Refactorizar copy no rompe tests.
+Los tests validan que el componente sea accesible de verdad (si getByRole('button', { name: /guardar/i }) encuentra algo, el botón tiene un nombre accesible correcto).
+Alinea los tests con cómo lo ve un lector de pantalla, no con cómo está escrito el HTML internamente.
+En resumen: nombre > contenido porque el nombre es contrato de accesibilidad; el contenido es detalle de implementación.
 
 
-veredicto:  [ ] filtra   [ ] siempre encendido   [ ] no carga nunca
+veredicto:  [ ] filtra   [x] siempre encendido   [ ] no carga nunca
 ```
 
 ---
@@ -257,10 +295,12 @@ y eso significa **no medible**, no cero. Inventar un `"main"` ahí produciría e
 delegación falso que costó dos conclusiones equivocadas en la retrospectiva anterior.
 
 ```
-salida:
+salida: Done — created
+hello.ts
+ with a single exported function.
 
 
-_esquema observado:
+_esquema observado: No escribio nada
 _claves (si desconocido):
 ```
 
@@ -282,16 +322,16 @@ salida:
 
 ## Veredicto
 
-| #     | Paso                        | Resultado |
-| ----- | --------------------------- | --------- |
-| 1     | Carga el método             | ✅ nombra `AGENTS.md`, los dos steering y las 17 skills |
-| 2     | Carga el territorio         | ⚠ **no concluyente** — nombró el fichero, no citó su contenido |
-| **3** | **El filtro filtra**        | ⚠ **no concluyente** — la respuesta se explica igual de bien por `AGENTS.md` |
-| **3-bis** | **El filtro filtra (afinado)** | ⬜ pendiente |
-| 4     | Ve los subagentes           | ✅ los tres |
-| **5** | **Honra el modelo** (R2)    | ❌ **no lo honra: da error.** Aplicado en el harness |
-| **6** | **Disparan los hooks** (R1) | ⬜ pendiente |
-| 7     | Registra las skills         | ⬜ pendiente |
+| #         | Paso                           | Resultado                                                                    |
+| --------- | ------------------------------ | ---------------------------------------------------------------------------- |
+| 1         | Carga el método                | ✅ nombra `AGENTS.md`, los dos steering y las 17 skills                      |
+| 2         | Carga el territorio            | ⚠ **no concluyente** — nombró el fichero, no citó su contenido               |
+| **3**     | **El filtro filtra**           | ⚠ **no concluyente** — la respuesta se explica igual de bien por `AGENTS.md` |
+| **3-bis** | **El filtro filtra (afinado)** | ⬜ pendiente                                                                 |
+| 4         | Ve los subagentes              | ✅ los tres                                                                  |
+| **5**     | **Honra el modelo** (R2)       | ❌ **no lo honra: da error.** Aplicado en el harness                         |
+| **6**     | **Disparan los hooks** (R1)    | ⬜ pendiente                                                                 |
+| 7         | Registra las skills            | ⬜ pendiente                                                                 |
 
 **Fecha**: 2026-08-03
 **Versión de Kiro**:
