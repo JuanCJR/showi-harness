@@ -75,12 +75,18 @@ describe('los permisos salen del perfil', () => {
   it('conserva el reparto de allow y deny sin inventarse ninguno', () => {
     const p = permisosConfig(PERFIL);
     const esperados = Object.entries(PERFIL.permisos.bash).filter(([, v]) => v === 'deny').length;
-    assert.equal(Object.values(p.bash).filter((v) => v === 'deny').length, esperados);
-    assert.equal(Object.keys(p.bash).length, Object.keys(PERFIL.permisos.bash).length);
+    assert.equal(Object.values(p.permission.bash).filter((v) => v === 'deny').length, esperados);
+    assert.equal(Object.keys(p.permission.bash).length, Object.keys(PERFIL.permisos.bash).length);
   });
 
   it('los deny de secretos sobreviven', () => {
-    assert.equal(permisosConfig(PERFIL).read['./**/.env.*'], 'deny');
+    assert.equal(permisosConfig(PERFIL).permission.read['./**/.env.*'], 'deny');
+  });
+
+  it('va envuelto en `permission`, que es lo que rulesync valida', () => {
+    // Sin la envoltura, rulesync rechaza el fichero entero y **no aplica ningún permiso**. El
+    // error se pierde entre el resto de la salida, así que el fallo es silencioso en la práctica.
+    assert.deepEqual(Object.keys(permisosConfig(PERFIL)), ['permission']);
   });
 });
 

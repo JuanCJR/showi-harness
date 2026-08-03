@@ -35,12 +35,11 @@ especificadas, en TDD.
 Lo único de metodología que es de este repositorio y no de las skills: {{.}}
 {{/documentos.regla_seguimiento}}
 
-{{#reglas_codigo}}
-## Reglas de código
+{{#tiene_reglas_codigo}}## Reglas de código
 
 {{#reglas_codigo}}- {{.}}
 {{/reglas_codigo}}
-{{/reglas_codigo}}
+{{/tiene_reglas_codigo}}
 
 > Este archivo lo **genera** `showi sync` desde `showi.yml`. Editarlo a mano se pierde en el próximo
 > `sync`, y `showi check` lo detecta antes.

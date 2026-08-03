@@ -31,7 +31,7 @@ const FEATURES = {
   copilot: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
   opencode: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
   'kiro-ide': ['rules', 'mcp', 'subagents', 'skills', 'hooks', 'permissions'],
-  agentsmd: ['rules', 'subagents'],
+  agentsmd: ['rules'], // los subagentes solo los simula; pedirlos es ruido
   agentsskills: ['skills'],
 };
 
@@ -97,11 +97,14 @@ export function hooksConfig(perfil) {
 
 /** Los permisos, tal cual los declara el perfil. No se añade ninguno que no esté escrito. */
 export function permisosConfig(perfil) {
-  const salida = {};
+  // La envoltura `permission` no es decorativa: sin ella rulesync rechaza el fichero entero con un
+  // error de validación, **no aplica ningún permiso**, y el mensaje se pierde entre el resto de la
+  // salida. Se descubrió porque los permisos no llegaban a ninguna herramienta.
+  const permission = {};
   for (const [categoria, reglas] of Object.entries(perfil.permisos ?? {})) {
-    salida[categoria] = { ...reglas };
+    permission[categoria] = { ...reglas };
   }
-  return salida;
+  return { permission };
 }
 
 /**

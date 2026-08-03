@@ -42,6 +42,40 @@ describe('lo portable no lleva marcadores', () => {
   }
 });
 
+// ── Guardián contra un defecto que ya se cometió DOS veces ─────────────────────────────────
+describe('ningún bloque se anida dentro de sí mismo', () => {
+  // `{{#xs}}…{{#xs}}…{{/xs}}…{{/xs}}` no falla: el motor conserva el contexto de fuera, así que la
+  // lista interna se resuelve otra vez y se emite **una vez por elemento de la externa**. Cinco
+  // reglas salen cinco veces. Pasó en `cierre.md.tmpl` y volvió a pasar en `00-producto.md.tmpl`
+  // después de haberlo corregido, así que la lección no es arreglarlo: es que no pueda volver.
+  const TODAS = [];
+  for (const dir of ['roles', 'rules', 'config', 'specs']) {
+    const base = new URL(`../templates/${dir}/`, import.meta.url).pathname;
+    const rec = (d) => {
+      for (const e of readdirSync(d)) {
+        const ruta = join(d, e);
+        if (statSync(ruta).isDirectory()) rec(ruta);
+        else if (e.endsWith('.tmpl') || e.endsWith('.md')) TODAS.push(ruta);
+      }
+    };
+    try { rec(base); } catch { /* directorio opcional */ }
+  }
+
+  for (const ruta of TODAS) {
+    it(`«${ruta.split('/templates/')[1]}» no anida un bloque consigo mismo`, () => {
+      const texto = readFileSync(ruta, 'utf8').replace(/\{\{!--[\s\S]*?--\}\}/g, '');
+      const abiertos = [];
+      for (const [, tipo, nombre] of texto.matchAll(/\{\{([#^/])\s*([\w.]+)\s*\}\}/g)) {
+        if (tipo === '/') abiertos.pop();
+        else {
+          assert.ok(!abiertos.includes(nombre), `«${nombre}» anidado dentro de sí mismo`);
+          abiertos.push(nombre);
+        }
+      }
+    });
+  }
+});
+
 // ── AC-6 ─────────────────────────────────────────────────────────────────────────────────────
 describe('lo del perfil no lleva prosa de ningún proyecto', () => {
   // Palabras que solo pueden llegar por marcador. Si alguna sobrevive a un render con contexto

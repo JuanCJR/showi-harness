@@ -124,6 +124,7 @@ export function derivar(perfil) {
       proyecto: perfil.proyecto,
       documentos: perfil.documentos,
       reglas_codigo: perfil.reglas_codigo ?? [],
+      tiene_reglas_codigo: perfil.reglas_codigo?.length ? [true] : [],
       ejecutores,
       roles_orquestador:
         Object.entries(perfil.roles).find(([, r]) => r.plantilla === 'orquestador')?.[0] ?? '',
