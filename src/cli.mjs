@@ -23,7 +23,6 @@ import { diagnosticar, formatear } from './doctor.mjs';
 import { actualizar, iniciar } from './ciclo.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
-const VERSION = JSON.parse(readFileSync(join(AQUI, 'package.json'), 'utf8')).version;
 
 const plantilla = (...t) => readFileSync(join(AQUI, 'templates', ...t), 'utf8');
 
@@ -96,10 +95,12 @@ export function derivar(perfil) {
       // `rulesync.jsonc` en la raíz porque es donde rulesync lo busca por defecto; los demás
       // dentro de `.rulesync/`, que es de donde los lee.
       fichero === 'rulesync.jsonc' ? fichero : `.rulesync/${fichero}`,
-      render(plantilla('config', tmpl), {
-        version: VERSION,
-        cuerpo: JSON.stringify(cuerpo, null, 2),
-      }),
+      // **Sin sello de versión.** Estamparla aquí hacía que cada subida del CLI marcara como
+      // divergido el árbol de todos los proyectos, por una línea de comentario y sin que nada
+      // sustantivo cambiara. Una falsa alarma en una comprobación de deriva enseña a usar
+      // `--forzar`, y así es como muere un contrato de parada. La versión vive en `showi.yml` y en
+      // `rulesync.lock`, que es donde se puede comprobar.
+      render(plantilla('config', tmpl), { cuerpo: JSON.stringify(cuerpo, null, 2) }),
     );
   }
 

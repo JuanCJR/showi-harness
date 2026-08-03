@@ -119,12 +119,12 @@ describe('lo generado es JSON válido y se anuncia como generado', () => {
     ['mcp', 'config/mcp.jsonc.tmpl', () => mcpConfig(PERFIL)],
   ]) {
     it(`«${nombre}» se parsea y avisa de que no se edita a mano`, () => {
-      const salida = render(leerPlantilla(plantilla), {
-        cuerpo: JSON.stringify(cuerpo(), null, 2),
-        version: '0.1.0',
-      });
+      const salida = render(leerPlantilla(plantilla), { cuerpo: JSON.stringify(cuerpo(), null, 2) });
       assert.match(salida, /GENERADO/);
       assert.match(salida, /no editar/i);
+      // Sin número de versión: si se estampa, cada subida del CLI marca como divergido el árbol de
+      // todos los proyectos por una línea de comentario, y esa falsa alarma enseña a usar --forzar.
+      assert.doesNotMatch(salida, /GENERADO.*\d+\.\d+\.\d+/);
       // Se quitan los comentarios de línea para poder parsearlo como JSON estricto.
       assert.doesNotThrow(() => JSON.parse(salida.replace(/^\s*\/\/.*$/gm, '')));
     });

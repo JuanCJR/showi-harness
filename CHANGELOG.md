@@ -40,6 +40,12 @@ Primera versión con el ciclo completo: instalar, sincronizar, diagnosticar y **
 
 ### Corregido
 
+- **El sello de versión del CLI salía en las cabeceras de los ficheros generados**, así que cada
+  subida de versión marcaba como divergido el árbol de todos los proyectos por una línea de
+  comentario, sin que nada sustantivo cambiara. Apareció en el primer `showi update` real: paró con
+  cuatro ficheros «derivados» y los cuatro tenían la misma diferencia de una línea. Una falsa alarma
+  en una comprobación de deriva enseña a usar `--forzar`, y así es como muere un contrato de parada.
+
 - **Los permisos no llegaban a ninguna herramienta.** Faltaba la envoltura `permission` que rulesync
   valida; se rechazaba el fichero entero y el error se perdía entre el resto de la salida.
 - **Un bloque de plantilla anidado dentro de sí mismo** emitía su contenido una vez por elemento.
