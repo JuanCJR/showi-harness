@@ -33,7 +33,6 @@ showi normaliza                 arregla las skills de origen con el nombre mal p
 showi check                     ¿algún generado ha derivado?           (sale 1 si sí)
 showi update                    traer una versión nueva del método
 showi doctor                    cruzar declarado × presente × habilitado
-showi specs project --to kiro   proyectar las specs al formato de Kiro
 ```
 
 `doctor` merece nombrarse aparte: implementa como comando una advertencia que hasta ahora solo estaba

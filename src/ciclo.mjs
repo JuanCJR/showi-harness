@@ -15,11 +15,18 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { comprobar, sincronizar } from './cli.mjs';
+
+const REPO_METODO = 'https://github.com/JuanCJR/showi-harness.git';
 import { render } from './render.mjs';
 import { bloqueDePerfil, catalogo } from './presets.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
-const VERSION_METODO = '0.3.3';
+
+// **Una sola fuente.** Estaba escrita también aquí como constante, y se subía a mano en los dos
+// sitios: cuatro versiones seguidas con dos oportunidades cada una de divergir. Es literalmente
+// «ningún número derivable se escribe a mano» —del método que este repositorio distribuye—
+// incumplido por su propia herramienta.
+const VERSION_METODO = JSON.parse(readFileSync(join(AQUI, 'package.json'), 'utf8')).version;
 
 /**
  * Crea el perfil de un proyecto nuevo y lo sincroniza. El perfil nace con marcadores `TODO`
@@ -93,7 +100,7 @@ export function iniciar(proyecto, datos = {}, opciones = {}) {
  * local que nadie recuerda haber hecho es peor que no actualizar. Es el contrato de parada aplicado
  * a la propia herramienta.
  */
-export function actualizar(proyecto, versionNueva, opciones = {}) {
+export async function actualizar(proyecto, versionNueva, opciones = {}) {
   const ruta = join(proyecto, 'showi.yml');
   const perfil = readFileSync(ruta, 'utf8');
   const actual = perfil.match(/^ {2}metodo: "(.*)"$/m)?.[1];
@@ -112,6 +119,27 @@ export function actualizar(proyecto, versionNueva, opciones = {}) {
           `\n\nRegenera con \`showi sync\` y vuelve a intentarlo, o usa --forzar si esos cambios ` +
           `se pueden perder.`,
       );
+    }
+  }
+
+  // El tag tiene que existir **en el remoto**, no en un clon local. Cuando no está, rulesync
+  // responde «no commit found for SHA», que se lee como si el origen entero no existiera y manda a
+  // buscar el problema donde no está. Avisar aquí cuesta una llamada.
+  if (!opciones.sinComprobarTag) {
+    try {
+      const { execFileSync } = await import('node:child_process');
+      const salida = execFileSync('git', ['ls-remote', '--tags', REPO_METODO, `v${versionNueva}`], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+      });
+      if (!salida.trim() && !opciones.silencioso) {
+        console.warn(
+          `showi update · aviso: v${versionNueva} no está publicada como tag en el remoto.\n` +
+            `  \`rulesync install\` fallará con «no commit found for SHA», que parece otra cosa.`,
+        );
+      }
+    } catch {
+      // Sin red o sin git no se bloquea: avisar es un extra, no una precondición.
     }
   }
 

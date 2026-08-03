@@ -10,6 +10,23 @@ mejorar el método sin obligar a nadie a tocar su perfil.
 
 ---
 
+## 0.3.4 — 2026-08-03
+
+Deuda del propio repositorio, encontrada al auditarlo en vez de al usarlo.
+
+- **La versión estaba escrita en dos sitios** y se subía a mano en los dos: cuatro versiones
+  seguidas con dos oportunidades cada una de divergir. Es literalmente «ningún número derivable se
+  escribe a mano», del método que este repositorio distribuye, incumplido por su herramienta. Ahora
+  sale de `package.json`.
+- **El README documentaba `showi specs`, que no existe.** Un comando prometido y ausente es peor que
+  uno no documentado: manda a buscar un fallo donde no hay nada.
+- **`update` no comprobaba que el tag existiera en el remoto.** Es el 422 que ya costó una vuelta:
+  rulesync responde «no commit found for SHA», que se lee como si el origen entero no existiera.
+  Ahora avisa antes, y no bloquea si no hay red.
+- **`install.sh` no lo probaba nadie**, siendo el punto de entrada de todo el que llega nuevo. El CI
+  lo instala, crea un proyecto y comprueba que responde — y tiene su mitad negativa: que **avise**
+  cuando el destino no está en el PATH, en vez de dejar un comando que nadie encuentra.
+
 ## 0.3.3 — 2026-08-03
 
 **Dos defectos que encontró el primer proyecto ajeno**, no un test. Los dos eran invisibles desde el

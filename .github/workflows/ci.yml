@@ -43,6 +43,34 @@ jobs:
           cp /tmp/bak skills/stop-and-report/SKILL.md
           echo "el guardián detecta la fuga · correcto"
 
+  # El punto de entrada de todo el que llega nuevo, y no lo probaba nadie. Si `install.sh` se
+  # rompe, da igual lo bueno que sea el resto: nadie llega a ejecutarlo.
+  instalador:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar desde el clon y comprobar que el comando responde
+        run: |
+          bash install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          showi roles | grep -q orchestrator
+          showi init /tmp/nuevo-proyecto "Prueba" prueba --roles orchestrator,backend
+          showi check /tmp/nuevo-proyecto
+
+      # La mitad negativa: que el instalador **avise** si el directorio no está en el PATH, en vez
+      # de dejar un comando que nadie encuentra.
+      - name: Avisa cuando el destino no está en el PATH
+        run: |
+          rm -f "$HOME/.local/bin/showi"
+          salida=$(PATH="/usr/bin:/bin:$(dirname $(which node))" bash install.sh 2>&1)
+          echo "$salida" | grep -q 'no está en tu PATH' || {
+            echo "::error::el instalador no avisó de que el destino no estaba en el PATH"
+            exit 1
+          }
+
   instalacion:
     # Contra el remoto de verdad: probar la instalación con una copia local demostraría que `cp`
     # funciona, no que `rulesync install` resuelve el origen y lo fija por SHA.

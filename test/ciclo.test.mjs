@@ -75,10 +75,10 @@ describe('init · instalar en un repositorio vacío (AC-15)', () => {
 });
 
 describe('update · AC-16 · no toca lo que es del proyecto', () => {
-  it('sube la versión del método y **nada más** del perfil', () => {
+  it('sube la versión del método y **nada más** del perfil', async () => {
     const d = proyectoCon('0.1.0');
     const antes = readFileSync(join(d, 'showi.yml'), 'utf8');
-    actualizar(d, '0.2.0', { silencioso: true });
+    await actualizar(d, '0.2.0', { silencioso: true, sinComprobarTag: true });
     const despues = readFileSync(join(d, 'showi.yml'), 'utf8');
 
     assert.match(despues, /metodo: "0\.2\.0"/);
@@ -91,51 +91,51 @@ describe('update · AC-16 · no toca lo que es del proyecto', () => {
     rmSync(d, { recursive: true, force: true });
   });
 
-  it('no toca el registro de defectos', () => {
+  it('no toca el registro de defectos', async () => {
     // Sin esto, el primer `update` se llevaría lo más caro de reconstruir que tiene un proyecto
     // maduro. Es la razón de que el registro viva fuera de los ficheros generados.
     const d = proyectoCon();
     const reg = join(d, 'docs/harness/defectos.md');
     const antes = hash(readFileSync(reg, 'utf8'));
-    actualizar(d, '0.2.0', { silencioso: true });
+    await actualizar(d, '0.2.0', { silencioso: true, sinComprobarTag: true });
     assert.equal(hash(readFileSync(reg, 'utf8')), antes);
     rmSync(d, { recursive: true, force: true });
   });
 
-  it('deja el árbol regenerado y sin deriva', () => {
+  it('deja el árbol regenerado y sin deriva', async () => {
     const d = proyectoCon();
-    actualizar(d, '0.2.0', { silencioso: true });
+    await actualizar(d, '0.2.0', { silencioso: true, sinComprobarTag: true });
     assert.deepEqual(comprobar(d).problemas, []);
     rmSync(d, { recursive: true, force: true });
   });
 });
 
 describe('update · AC-17 · para si el generado ya estaba divergido', () => {
-  it('se niega a escribir y nombra el fichero', () => {
+  it('se niega a escribir y nombra el fichero', async () => {
     // El contrato de parada aplicado a la propia herramienta: sobreescribir un cambio local que
     // nadie recuerda haber hecho es peor que no actualizar.
     const d = proyectoCon();
     const tocado = join(d, '.rulesync/subagents/frontend.md');
     writeFileSync(tocado, `${readFileSync(tocado, 'utf8')}\ncambio a mano\n`);
 
-    assert.throws(() => actualizar(d, '0.2.0', { silencioso: true }), /frontend\.md/);
+    await assert.rejects(() => actualizar(d, '0.2.0', { silencioso: true, sinComprobarTag: true }), /frontend\.md/);
     // Y no ha escrito: la versión del perfil sigue siendo la de antes.
     assert.match(readFileSync(join(d, 'showi.yml'), 'utf8'), /metodo: "0\.1\.0"/);
     rmSync(d, { recursive: true, force: true });
   });
 
-  it('con `--forzar` sí actualiza, pero hay que pedirlo', () => {
+  it('con `--forzar` sí actualiza, pero hay que pedirlo', async () => {
     const d = proyectoCon();
     const tocado = join(d, '.rulesync/subagents/frontend.md');
     writeFileSync(tocado, `${readFileSync(tocado, 'utf8')}\ncambio a mano\n`);
-    actualizar(d, '0.2.0', { forzar: true, silencioso: true });
+    await actualizar(d, '0.2.0', { forzar: true, silencioso: true, sinComprobarTag: true });
     assert.match(readFileSync(join(d, 'showi.yml'), 'utf8'), /metodo: "0\.2\.0"/);
     rmSync(d, { recursive: true, force: true });
   });
 
-  it('no hace nada si ya está en la versión pedida', () => {
+  it('no hace nada si ya está en la versión pedida', async () => {
     const d = proyectoCon('0.1.0');
-    const r = actualizar(d, '0.1.0', { silencioso: true });
+    const r = await actualizar(d, '0.1.0', { silencioso: true, sinComprobarTag: true });
     assert.equal(r.aplicado, false);
     rmSync(d, { recursive: true, force: true });
   });

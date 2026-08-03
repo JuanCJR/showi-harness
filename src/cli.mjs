@@ -259,7 +259,7 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
     } else if (orden === 'update') {
       const version = process.argv[4];
       if (!version) throw new Error('uso: showi update <proyecto> <version>');
-      actualizar(proyecto, version, { forzar: process.argv.includes('--forzar') });
+      await actualizar(proyecto, version, { forzar: process.argv.includes("--forzar") });
     } else if (orden === 'sync') {
       sincronizar(proyecto);
     } else if (orden === 'normaliza') {
