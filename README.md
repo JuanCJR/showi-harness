@@ -41,6 +41,20 @@ escrita en prosa — *una skill o un servidor apagado en la configuración no se
 rol lo declare obligatorio*. Ese cruce es el que dejó tres skills muertas durante siete specs, y hoy no
 lo hace nadie.
 
+## Instalación
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/JuanCJR/showi-harness/main/install.sh | bash
+```
+
+Clona el método, instala su dependencia y deja `showi` disponible en cualquier terminal. Si `~/.local/bin`
+no está en tu `PATH`, te dice exactamente qué línea añadir y dónde.
+
+**No usa `npm link`**, aunque sea lo habitual: ése instala en el `bin` de la versión de node en uso,
+así que un `nvm use` hace desaparecer el comando sin explicación y parece que se desinstaló. El
+lanzador que deja no depende de la versión de node, y **apunta al repositorio, no a una copia**: lo
+que cambies ahí está disponible al instante.
+
 ## Elegir roles
 
 ```bash

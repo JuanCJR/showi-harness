@@ -10,6 +10,17 @@ mejorar el método sin obligar a nadie a tocar su perfil.
 
 ---
 
+## 0.3.2 — 2026-08-03
+
+**`install.sh`**: una línea y `showi` queda disponible en cualquier terminal.
+
+Faltaba lo más básico: la única forma de tener el comando era saber que existe `npm link` y correrlo
+desde el clon. Quien empieza de cero no tiene por qué saber eso, y una herramienta cuyo primer paso
+hay que adivinar no se usa.
+
+No usa `npm link` a propósito: ése instala en el `bin` de la versión de node en uso, así que un
+`nvm use` hace desaparecer el comando sin explicación. El lanzador que deja no depende de eso.
+
 ## 0.3.1 — 2026-08-03
 
 **El guardián de integridad tenía un punto ciego: miraba el disco, no el repositorio.** Un fichero
