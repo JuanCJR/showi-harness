@@ -1,0 +1,46 @@
+---
+root: true
+description: Qué es este proyecto y cómo se trabaja en él.
+---
+
+# {{proyecto.nombre}}
+
+{{proyecto.dominio}}
+
+## Quién hace qué
+
+Cualquier cambio significativo entra por `{{roles_orquestador}}`, dueño de los documentos de
+especificación y del de seguimiento. Nadie más los edita. Quien implementa solo ejecuta tareas ya
+especificadas, en TDD.
+
+| Rol | Territorio |
+|---|---|
+{{#ejecutores}}| `{{nombre}}` | {{territorio}} |
+{{/ejecutores}}
+
+## El método
+
+**El método vive en las skills, no en este archivo.** Aquí solo está dónde aplica.
+
+| Skill | Qué posee |
+|---|---|
+| `spec-driven-development` | Nada se implementa sin especificación versionada. |
+| `test-driven-development-tdd` | RED → GREEN → REFACTOR, la regla del andamio y el radio de un cambio. |
+| `stop-and-report` | Cuándo se para y se avisa en vez de arreglarlo por cuenta propia. |
+| `verification-and-measurement` | Cómo se verifica, y cómo no creerse un cero falso. |
+
+**Si una de las cuatro no está disponible, se para y se avisa** — no se reconstruye de memoria.
+
+{{#documentos.regla_seguimiento}}
+Lo único de metodología que es de este repositorio y no de las skills: {{.}}
+{{/documentos.regla_seguimiento}}
+
+{{#reglas_codigo}}
+## Reglas de código
+
+{{#reglas_codigo}}- {{.}}
+{{/reglas_codigo}}
+{{/reglas_codigo}}
+
+> Este archivo lo **genera** `showi sync` desde `showi.yml`. Editarlo a mano se pierde en el próximo
+> `sync`, y `showi check` lo detecta antes.

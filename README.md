@@ -37,6 +37,17 @@ escrita en prosa — *una skill o un servidor apagado en la configuración no se
 rol lo declare obligatorio*. Ese cruce es el que dejó tres skills muertas durante siete specs, y hoy no
 lo hace nadie.
 
+## Antes de instalar
+
+```bash
+export GITHUB_TOKEN=$(gh auth token)   # o cualquier token de lectura
+```
+
+**No es opcional en cuanto haya más de un puñado de orígenes.** Sin token, la API de GitHub da 60
+llamadas por hora y por IP; con una decena de skills de terceros se agotan de una pasada y
+`rulesync install` falla con 403 **sin instalar ninguna, ni siquiera el método**. Con token son
+5.000/hora. Es la clase de fallo que se diagnostica mal: parece que el origen no existe.
+
 ## Estado
 
 **En construcción.** La spec `000` está escrita; la implementación no ha empezado. Nada de lo de abajo

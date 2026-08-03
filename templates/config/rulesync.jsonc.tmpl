@@ -1,6 +1,11 @@
 // GENERADO por showi {{version}} desde showi.yml — no editar a mano.
 // Cualquier cambio aquí lo borra el próximo `showi sync`; lo que se edita es `showi.yml`.
 //
+// **Necesita `GITHUB_TOKEN` en el entorno.** Sin él, la API de GitHub da 60 llamadas por hora y
+// por IP, y `rulesync install` las agota con una decena de orígenes: falla con 403 y **ningún
+// origen se instala**, ni siquiera el método. Con token son 5.000/hora.
+//     export GITHUB_TOKEN=$(gh auth token)
+//
 // La primera entrada de `sources` es el método, fijado por tag: una rama haría que dos clones del
 // mismo commit instalaran métodos distintos. Las demás son las skills del stack.
 {{cuerpo}}

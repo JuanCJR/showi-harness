@@ -50,11 +50,21 @@ describe('sync escribe lo que el perfil declara', () => {
 
   it('escribe las cuatro configuraciones y son JSON válido', () => {
     sincronizar(proyecto);
-    for (const f of ['rulesync.jsonc', 'hooks.jsonc', 'permissions.jsonc', 'mcp.jsonc']) {
-      const texto = leer(`.rulesync/${f}`);
+    // `rulesync.jsonc` va en la raíz —es donde rulesync lo busca por defecto—; los demás dentro.
+    for (const f of ['rulesync.jsonc', '.rulesync/hooks.jsonc', '.rulesync/permissions.jsonc', '.rulesync/mcp.jsonc']) {
+      const texto = leer(f);
       assert.match(texto, /GENERADO/);
       assert.doesNotThrow(() => JSON.parse(texto.replace(/^\s*\/\/.*$/gm, '')), f);
     }
+  });
+
+  it('escribe las reglas del proyecto, con sus globs de territorio', () => {
+    sincronizar(proyecto);
+    // Un solo campo `globs:` en la fuente; rulesync lo traduce a `paths:`, `applyTo:` e
+    // `inclusion: fileMatch` según la herramienta. Cinco dialectos, un dato.
+    assert.match(leer('.rulesync/rules/00-producto.md'), /root: true/);
+    assert.match(leer('.rulesync/rules/20-territorio-frontend.md'), /globs: \["apps\/web\/\*\*"/);
+    assert.match(leer('.rulesync/rules/20-territorio-backend.md'), /apps\/api/);
   });
 
   it('deja la instrumentación donde el perfil dice, con sus territorios', () => {
@@ -118,7 +128,7 @@ describe('check detecta la deriva', () => {
   it('compara contenido, no solo existencia', () => {
     // La mutación obvia de un `check` es comprobar que el fichero está y dar por bueno lo que tenga.
     sincronizar(proyecto);
-    writeFileSync(join(proyecto, '.rulesync/rulesync.jsonc'), '// vacío\n{}\n');
+    writeFileSync(join(proyecto, 'rulesync.jsonc'), '// vacío\n{}\n');
     assert.match(comprobar(proyecto).problemas.join(' '), /rulesync\.jsonc/);
     sincronizar(proyecto);
   });

@@ -1,0 +1,18 @@
+---
+description: Reglas que solo aplican al territorio de {{nombre}}.
+globs: {{globs}}
+---
+
+# Territorio de `{{nombre}}`
+
+{{fronteras}}
+
+{{#secciones_casa}}## {{titulo}}
+
+{{#intro}}{{.}}
+
+{{/intro}}{{#reglas}}- {{.}}
+{{/reglas}}
+{{/secciones_casa}}
+
+> Generado por `showi sync`. Se edita en `showi.yml`.

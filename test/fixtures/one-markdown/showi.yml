@@ -28,6 +28,13 @@ documentos:
     pendiente · `[~]` en curso o bloqueado con motivo · `[x]` hecho y verificado. El detalle
     histórico de cada feature va a su CHANGELOG, no ahí.
 
+reglas_codigo:
+  - TypeScript estricto en todos los paquetes.
+  - "**Autorización por recurso**: todo acceso a documentos/directorios se filtra por el `userId` del token."
+  - El backend es el dueño del auth (JWT access+refresh, bcrypt, MFA TOTP, Passport, Redis). Auth.js está fuera de alcance.
+  - Preview de markdown siempre **sanitizado**.
+  - Secretos solo por variables de entorno validadas al arrancar; nada en el repo.
+
 herramientas:
   # `agentsmd` da la raíz del método a Kiro (no tiene fichero raíz propio en ámbito de proyecto).
   # `agentsskills` es el que emite `.agents/skills/`, la ruta neutral: `agentsmd` NO emite skills.

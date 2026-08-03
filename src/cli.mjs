@@ -91,7 +91,9 @@ export function derivar(perfil) {
     ['mcp.jsonc', 'mcp.jsonc.tmpl', mcpConfig(perfil)],
   ]) {
     salida.set(
-      `.rulesync/${fichero}`,
+      // `rulesync.jsonc` en la raíz porque es donde rulesync lo busca por defecto; los demás
+      // dentro de `.rulesync/`, que es de donde los lee.
+      fichero === 'rulesync.jsonc' ? fichero : `.rulesync/${fichero}`,
       render(plantilla('config', tmpl), {
         version: VERSION,
         cuerpo: JSON.stringify(cuerpo, null, 2),
@@ -111,6 +113,36 @@ export function derivar(perfil) {
     ),
   ].sort();
   salida.set(`${destino}/config.json`, `${JSON.stringify({ territorios }, null, 2)}\n`);
+
+  const ejecutores = Object.entries(perfil.roles)
+    .filter(([, r]) => r.territorio)
+    .map(([n, r]) => ({ nombre: n, territorio: r.territorio.join(', ') }));
+
+  salida.set(
+    '.rulesync/rules/00-producto.md',
+    render(plantilla('rules', '00-producto.md.tmpl'), {
+      proyecto: perfil.proyecto,
+      documentos: perfil.documentos,
+      reglas_codigo: perfil.reglas_codigo ?? [],
+      ejecutores,
+      roles_orquestador:
+        Object.entries(perfil.roles).find(([, r]) => r.plantilla === 'orquestador')?.[0] ?? '',
+    }),
+  );
+
+  for (const [nombre, rol] of Object.entries(perfil.roles)) {
+    if (!rol.territorio) continue;
+    salida.set(
+      `.rulesync/rules/20-territorio-${nombre}.md`,
+      render(plantilla('rules', '20-territorio.md.tmpl'), {
+        ...rol,
+        nombre,
+        // Los globs viajan como JSON: es el mismo campo que rulesync traduce a `paths:` en una
+        // herramienta, `applyTo:` en otra y `inclusion: fileMatch` en Kiro. Cinco dialectos, un dato.
+        globs: JSON.stringify(rol.territorio),
+      }),
+    );
+  }
 
   const ejemplo = Object.values(perfil.roles).find((r) => r.verificacion)?.verificacion?.[0]?.cmd;
   for (const doc of ['spec', 'plan', 'tasks', 'CHANGELOG']) {
