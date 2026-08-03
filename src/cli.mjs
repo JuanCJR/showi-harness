@@ -159,6 +159,39 @@ export function derivar(perfil) {
   return salida;
 }
 
+/**
+ * El estándar de skills exige que el `name` del frontmatter sea el del directorio. Algunas skills
+ * publicadas lo incumplen —declaran un nombre y viven en otra carpeta—, y la mayoría de herramientas
+ * lo tragan en silencio. Kiro no: **aborta la generación entera**, y entonces el árbol se queda a
+ * medias sin que el mensaje diga por qué.
+ *
+ * Se normaliza aquí, entre instalar y repartir, y **se dice cuál**. No se toca el origen: la próxima
+ * instalación lo traerá igual de mal y esto volverá a corregirlo, así que la comprobación de
+ * integridad del lockfile sigue valiendo.
+ */
+export function normalizarSkills(proyecto, opciones = {}) {
+  const raiz = join(proyecto, '.rulesync', 'skills', '.curated');
+  const corregidas = [];
+  if (!existsSync(raiz)) return { corregidas };
+
+  for (const dir of readdirSync(raiz)) {
+    const ruta = join(raiz, dir, 'SKILL.md');
+    if (!existsSync(ruta)) continue;
+    const texto = readFileSync(ruta, 'utf8');
+    const m = texto.match(/^(---\r?\n(?:.*\r?\n)*?)name:[ \t]*(\S+)[ \t]*(\r?\n)/);
+    if (!m || m[2] === dir) continue;
+    writeFileSync(ruta, texto.replace(/^name:[ \t]*\S+[ \t]*$/m, `name: ${dir}`));
+    corregidas.push({ dir, declaraba: m[2] });
+  }
+
+  if (corregidas.length && !opciones.silencioso) {
+    for (const c of corregidas) {
+      console.warn(`showi · «${c.dir}» declaraba name: ${c.declaraba} — corregido al del directorio`);
+    }
+  }
+  return { corregidas };
+}
+
 /** Escribe lo derivado, y copia la instrumentación —que se copia tal cual, no se deriva—. */
 export function sincronizar(proyecto, opciones = {}) {
   const perfil = perfilDe(proyecto);
@@ -204,6 +237,10 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
   try {
     if (orden === 'sync') {
       sincronizar(proyecto);
+    } else if (orden === 'normaliza') {
+      // Va **entre** `rulesync install` y `rulesync generate`.
+      const { corregidas } = normalizarSkills(proyecto);
+      console.log(`showi normaliza · ${corregidas.length} skill(s) corregida(s)`);
     } else if (orden === 'check') {
       const { problemas } = comprobar(proyecto);
       if (problemas.length === 0) {
@@ -214,7 +251,7 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
         process.exit(1);
       }
     } else {
-      console.error('uso: showi <sync|check> [proyecto]');
+      console.error('uso: showi <sync|normaliza|check> [proyecto]');
       process.exit(2);
     }
   } catch (e) {

@@ -1,10 +1,10 @@
-import { cpSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { cpSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import { comprobar, sincronizar } from '../src/cli.mjs';
+import { comprobar, normalizarSkills, sincronizar } from '../src/cli.mjs';
 
 const FIXTURE = new URL('./fixtures/one-markdown/showi.yml', import.meta.url).pathname;
 
@@ -88,6 +88,36 @@ describe('sync escribe lo que el perfil declara', () => {
     writeFileSync(join(roto, 'showi.yml'), perfil);
     assert.throws(() => sincronizar(roto), /proyecto\.slug/);
     rmSync(roto, { recursive: true, force: true });
+  });
+});
+
+describe('una skill de origen con el nombre mal se normaliza, y se dice', () => {
+  // El estándar exige que `name` sea el del directorio. Hay skills publicadas que lo incumplen, y
+  // la mayoría de herramientas lo tragan; Kiro **aborta la generación entera** y deja el árbol a
+  // medias sin decir por qué. Esto lo absorbe entre instalar y repartir, en voz alta.
+  const preparar = (nombreDeclarado) => {
+    const dir = join(proyecto, '.rulesync/skills/.curated/composition-patterns');
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, 'SKILL.md'), `---\nname: ${nombreDeclarado}\ndescription: x\n---\n\ncuerpo\n`);
+    return join(dir, 'SKILL.md');
+  };
+
+  it('corrige el nombre al del directorio y lo reporta', () => {
+    const ruta = preparar('vercel-composition-patterns');
+    const { corregidas } = normalizarSkills(proyecto, { silencioso: true });
+    assert.deepEqual(corregidas, [{ dir: 'composition-patterns', declaraba: 'vercel-composition-patterns' }]);
+    assert.match(readFileSync(ruta, 'utf8'), /^name: composition-patterns$/m);
+  });
+
+  it('no toca el cuerpo', () => {
+    const ruta = preparar('otro-nombre');
+    normalizarSkills(proyecto, { silencioso: true });
+    assert.match(readFileSync(ruta, 'utf8'), /\ncuerpo\n/);
+  });
+
+  it('no reporta nada cuando el nombre ya cuadra', () => {
+    preparar('composition-patterns');
+    assert.deepEqual(normalizarSkills(proyecto, { silencioso: true }).corregidas, []);
   });
 });
 

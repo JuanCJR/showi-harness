@@ -26,6 +26,7 @@ fichero.
 ```
 showi init                      instalar el harness en un repositorio
 showi sync                      showi.yml + el método  →  los seis destinos
+showi normaliza                 arregla las skills de origen con el nombre mal puesto
 showi check                     ¿algún generado ha derivado?           (sale 1 si sí)
 showi update                    traer una versión nueva del método
 showi doctor                    cruzar declarado × presente × habilitado
@@ -36,6 +37,23 @@ showi specs project --to kiro   proyectar las specs al formato de Kiro
 escrita en prosa — *una skill o un servidor apagado en la configuración no se puede invocar aunque un
 rol lo declare obligatorio*. Ese cruce es el que dejó tres skills muertas durante siete specs, y hoy no
 lo hace nadie.
+
+## La secuencia completa
+
+```bash
+export GITHUB_TOKEN=$(gh auth token)
+showi sync                       # perfil → .rulesync/ y rulesync.jsonc
+npx rulesync@latest install      # trae el método y las skills de terceros, fijados por SHA
+showi normaliza                  # ← imprescindible, ver abajo
+npx rulesync@latest generate     # reparte a los seis destinos
+showi check                      # ¿ha derivado algo?
+```
+
+**Por qué `showi normaliza` no se puede saltar.** El estándar de skills exige que el `name` del
+frontmatter sea el del directorio. Hay skills publicadas que lo incumplen. Casi todas las herramientas
+lo tragan en silencio; **Kiro aborta la generación entera** y deja el árbol a medias con un mensaje
+que no dice qué hacer. Este paso lo corrige entre instalar y repartir, y **dice cuál corrigió**. No
+toca el origen, así que la comprobación de integridad del lockfile sigue valiendo.
 
 ## Antes de instalar
 

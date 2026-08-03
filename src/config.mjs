@@ -23,9 +23,23 @@ const REPO_METODO = 'JuanCJR/showi-harness';
  * commit instalaran métodos distintos, que es la clase de divergencia que este repositorio existe
  * para acabar.
  */
+// Lo que cada destino sabe hacer de verdad. Pedirle `*` a todos llena la salida de «no soporta
+// esta feature», y ese ruido tapa los errores que sí importan.
+const FEATURES = {
+  claudecode: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
+  cursor: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
+  copilot: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
+  opencode: ['rules', 'mcp', 'subagents', 'commands', 'skills', 'hooks', 'permissions'],
+  'kiro-ide': ['rules', 'mcp', 'subagents', 'skills', 'hooks', 'permissions'],
+  agentsmd: ['rules', 'subagents'],
+  agentsskills: ['skills'],
+};
+
 export function rulesyncConfig(perfil, versionMetodo) {
   const targets = {};
-  for (const herramienta of perfil.herramientas.activas) targets[herramienta] = ['*'];
+  for (const herramienta of perfil.herramientas.activas) {
+    targets[herramienta] = FEATURES[herramienta] ?? ['rules', 'skills'];
+  }
 
   const sources = [
     { source: `${REPO_METODO}@v${versionMetodo}`, skills: [...METODO], rules: ['metodo'] },
