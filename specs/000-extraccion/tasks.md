@@ -307,17 +307,20 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 8 · Kiro
 
-- [ ] **T-018 · La sintaxis de lo generado para Kiro es válida** (AC-18)
-  - **RED**: las cuatro comprobaciones del criterio sobre el árbol generado.
+- [x] **T-018 · La sintaxis de lo generado para Kiro es válida** (AC-18)
   - **Toca**: `test/kiro.test.mjs`
-  - **DONE**: `node --test test/kiro.test.mjs`
+  - **DONE**: `SHOWI_PROYECTO=<ruta> node --test test/kiro.test.mjs` → 7/7 contra el proyecto real.
+  - **Sin proyecto generado los casos se saltan**, no pasan: un test que da verde sin nada que mirar
+    es peor que no tenerlo.
+  - **Mutaciones**: `fileMatch` sin patrón —que haría cargar la regla **siempre** en vez de nunca—
+    → cae 1 · un hook apuntando a un script ausente → cae 1.
+  - Cubre además dos cruces que nadie hacía: que cada skill cumpla `name` == directorio (lo que hace
+    abortar a Kiro), y que los scripts que la configuración de hooks nombra **existan** — uno que no
+    existe no falla, simplemente no mide, y ese silencio se lee como un cero.
 
-- [ ] **T-019 · Guion de aceptación manual en Kiro, con evidencia pegada** (AC-19)
-  - **No lleva test.** Es la verificación declarada no automatizable. Se escribe el guion, se ejecuta a
-    mano y se pega la salida real, incluida la de los pasos que fallen.
-  - **Toca**: `docs/aceptacion-kiro.md`
-  - **DONE**: el documento contiene los tres pasos que distinguen «existe» de «se lee», con su
-    evidencia.
+- [~] **T-019 · Guion de aceptación manual en Kiro** (AC-19) · **guion escrito, pendiente de
+      ejecutar**: `docs/aceptacion-kiro.md`. Siete pasos, de los que **tres** distinguen «el fichero
+      existe» de «la herramienta lo lee». Necesita abrir Kiro; no lo puede hacer un test.
 
 - [ ] **T-020 · Resolver los dos supuestos no verificados sobre Kiro** (AC-20)
   - **RED**: el modo sonda de T-012 aplicado a Kiro; y comprobar si respeta el campo de modelo.
