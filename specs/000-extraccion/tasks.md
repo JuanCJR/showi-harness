@@ -39,6 +39,13 @@ algo: un comando que no corre nada sale en verde y no significa nada.
   - **Mutaciones**: obligatorios invertidos → caen 9 · el vigía de palabras no vigila → cae 1 ·
     solo se reporta el primer problema → cae 1.
 
+### Hallazgo de la fase 2
+
+El modo consumidor del script, corrido contra el proyecto de referencia, mide el defecto que motivó
+todo esto: **18 ausencias, 2 fugas y 2 divergencias**. Las fugas son de las skills de terceros que
+suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa conservada en
+`docs/evidencia/2026-08-03-defecto-vivo.md` — es el RED de T-017.
+
 ### Desvíos de la fase 1, declarados
 
 1. **T-002 estrenó `test/render-sin-logica.test.mjs`**, que no estaba en sus artefactos: la tarea
@@ -58,18 +65,29 @@ algo: un comando que no corre nada sale en verde y no significa nada.
 
 ## Fase 2 · El método como fuente instalable
 
-- [ ] **T-004 · Las skills quedan en el layout que exige `sources`**
-  - **RED**: el script de integridad (AC-1, AC-2) corre sobre el repositorio del método y falla si una
-    skill de `METODO` no está en `skills/<nombre>/SKILL.md`.
+- [x] **T-004 · Las skills quedan en el layout que exige `sources`**
   - **Toca**: `skills/**`, `test/integridad.sh`
-  - **DONE**: `bash test/integridad.sh`
+  - **DONE**: `bash test/integridad.sh` → exit 0, las cuatro presentes con el nombre del directorio.
+  - **Sin rojo previo**: las cuatro ya estaban en el layout correcto desde el primer commit. Lo nuevo
+    era el instrumento, así que se verifica por mutación — y esas mutaciones **son AC-4**:
 
-- [ ] **T-005 · `rules/metodo.md` existe y no nombra ningún proyecto** (AC-3)
-  - **RED**: el patrón de fuga sobre `rules/metodo.md` — falla porque el fichero no existe.
+    | Mutación | Mensaje | Salida |
+    |---|---|---|
+    | mover `skills/stop-and-report/` fuera | `FALTA · … «sources» solo descubre skills en <path>/<nombre>/SKILL.md` | 1 |
+    | añadir «los tests se corren con vitest» al cuerpo | `FUGA · … nombra un stack concreto` + la línea | 1 |
+    | `name:` que no coincide con el directorio | `NOMBRE · … declara «parar-y-avisar» y vive en «stop-and-report»` | 1 |
+
+    Tres modos de fallo, tres mensajes distintos. AC-4 pedía exactamente que la ausencia y la
+    contaminación no se confundieran.
+
+- [x] **T-005 · `rules/metodo.md` existe y no nombra ningún proyecto** (AC-3)
   - **Toca**: `rules/metodo.md`, `test/integridad.sh`
-  - **DONE**: `bash test/integridad.sh`
+  - **RED real**: `FALTA · rules/metodo.md — es la raíz del método, la que acaba en AGENTS.md`, exit 1.
+  - **DONE**: `bash test/integridad.sh` → exit 0.
 
-- [ ] **T-006 · Un repositorio desechable instala el método por SHA**
+- [~] **T-006 · Un repositorio desechable instala el método por SHA** · **BLOQUEADA**: no hay
+      remoto publicado. No se simula con una copia local — probaría otra cosa. Espera a
+      `JuanCJR/showi-harness` en GitHub.
   - **RED**: instalar desde el repositorio del método en un directorio temporal y comprobar AC-1;
     falla mientras no haya remoto publicado. **Bloqueante conocido**: requiere el repositorio
     publicado. Si no lo está, se para y se avisa — no se simula con una copia local, que probaría otra
