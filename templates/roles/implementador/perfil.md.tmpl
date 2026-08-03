@@ -1,0 +1,54 @@
+{{!--
+  §1 · SOLO MARCADORES.
+  Invariante que comprueba `test/plantillas.test.mjs`: aquí no puede haber una sola palabra sobre
+  ningún proyecto concreto. Todo lo sustantivo entra por `showi.yml`. Los encabezados y las cabeceras
+  de tabla son estructura, no contenido.
+--}}
+# §1 · Perfil del proyecto
+
+## Dominio
+
+{{dominio}}
+
+## Alcance y fronteras
+
+{{fronteras}}
+
+## Stack (no lo cambies)
+
+{{stack}}
+
+## Dónde vive cada tipo de test
+
+| Nivel | Ruta |
+|---|---|
+{{#tests}}| {{nivel}} | `{{ruta}}` |{{^nota}}
+{{/nota}}{{#nota}} · {{.}}
+{{/nota}}{{/tests}}
+{{#tests_minimos}}
+{{.}}
+{{/tests_minimos}}
+
+## Comandos de verificación
+
+```bash
+{{#verificacion}}{{cmd}}{{#que}}    # {{.}}{{/que}}
+{{/verificacion}}```
+
+## Skills del stack y MCP
+
+> Las skills de **método** están en §2 y no cambian al portar. Esta tabla es la del **stack**.
+>
+> **Comprueba cuáles están activas antes de confiar en ella.** Una herramienta apagada en la
+> configuración no se puede invocar aunque aquí figure como obligatoria.
+
+| Herramienta | Cuándo |
+|---|---|
+{{#skills_stack}}| `{{nombre}}` | {{cuando}} |
+{{/skills_stack}}{{#mcp}}| MCP `{{nombre}}` | {{cuando}} |
+{{/mcp}}
+
+## Reglas de la casa
+
+{{#reglas_casa}}- {{.}}
+{{/reglas_casa}}

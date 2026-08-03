@@ -1,0 +1,23 @@
+{{!--
+  §5 · Lo que este proyecto añade a §4, y el enlace al registro de defectos.
+  Va DESPUÉS de la parte portable a propósito: aquí es donde aterriza lo específico del proyecto que
+  antes se colaba dentro de §4 —«los DTO creados», «la migración generada»— y contaminaba lo que
+  estaba declarado portable.
+--}}
+{{#reporta_ademas}}
+# §5 · Lo que además reportas en este proyecto
+
+{{#reporta_ademas}}- {{.}}
+{{/reporta_ademas}}
+{{/reporta_ademas}}
+
+# Anexo · Registro de defectos de este proyecto — NO SE PORTA
+
+Cada regla del método salió de un defecto real, y una regla sin su historia se obedece a medias. Los
+de este repositorio están en **`{{registro_defectos}}`**.
+
+**Léelo antes de la primera tarea de una sesión.**
+
+Vive fuera de este archivo a propósito: **este archivo es generado** desde `showi.yml`, y un
+`showi update` se lo llevaría por delante. El registro es del proyecto, no del método: no se genera,
+no se porta, y un proyecto nuevo lo empieza vacío.

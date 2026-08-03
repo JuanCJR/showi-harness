@@ -39,6 +39,11 @@ algo: un comando que no corre nada sale en verde y no significa nada.
   - **Mutaciones**: obligatorios invertidos → caen 9 · el vigía de palabras no vigila → cae 1 ·
     solo se reporta el primer problema → cae 1.
 
+### Desvío de la fase 3
+
+`src/roles.mjs` no estaba en los artefactos de T-009. Se estrenó porque el frontmatter necesita YAML
+anidado por herramienta y el motor no tiene lógica: el dato se precalcula fuera y entra ya resuelto.
+
 ### Hallazgo de la fase 2
 
 El modo consumidor del script, corrido contra el proyecto de referencia, mide el defecto que motivó
@@ -97,25 +102,50 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 3 · Partir los roles
 
-- [ ] **T-007 · La parte portable de los roles no contiene marcadores** (AC-5)
-  - **RED**: la comprobación sobre `templates/roles/_comun/metodo.md` y los `portable.md` falla
-    mientras esos ficheros no existan partidos.
+- [x] **T-007 · La parte portable de los roles no contiene marcadores** (AC-5)
   - **Toca**: `templates/roles/**`, `test/plantillas.test.mjs`
-  - **DONE**: `node --test test/plantillas.test.mjs`
-  - **Nota**: aquí es donde se descubre qué se coló de proyecto en lo que se creía portable. **Cada
-    hallazgo se reporta, no se corrige en silencio**: si el método nombra un stack, eso cambia la
-    skill, y eso es una decisión, no una tarea.
+  - **DONE**: `npm test` → 64/64. **Mutación**: meter `{{proyecto.nombre}}` en un `portable.md` →
+    cae 1 caso.
 
-- [ ] **T-008 · La parte de perfil no contiene prosa de proyecto** (AC-6)
-  - **RED**: render con contexto centinela; falla si sobrevive una palabra del proyecto de referencia.
-  - **Toca**: `templates/roles/*/perfil.md.tmpl`, `test/plantillas.test.mjs`
-  - **DONE**: `node --test test/plantillas.test.mjs`
+  **HALLAZGOS · lo que se había colado en lo declarado portable.** La tarea los anticipaba y por eso
+  se reportan en vez de corregirse callando:
 
-- [ ] **T-009 · El frontmatter lleva el modelo de cada par rol × herramienta** (AC-8, AC-9)
-  - **RED**: un perfil con modelos distintos por herramienta produce el bloque de cada una; y la
-    herramienta sin soporte **no** recibe campo de modelo.
-  - **Toca**: `templates/roles/*/frontmatter.yml.tmpl`, `test/modelos.test.mjs`
-  - **DONE**: `node --test test/modelos.test.mjs`
+  | # | Qué | Dónde estaba | Dónde va ahora |
+  |---|---|---|---|
+  | 1 | «un test que demuestra que un límite existe no se neutraliza para que la suite pase» | puerta 4 de **solo uno** de los dos implementadores | `reglas_casa` del perfil |
+  | 2 | «los DTO de entrada y salida creados · la migración generada (nombre) · qué contratos debe consumir el frontend» | §4 «Al terminar» de **solo uno** de los dos | `reporta_ademas` del perfil, que aterriza en un §5 nuevo |
+  | 3 | §2 **no era idéntico entre roles**, como daba por hecho el plan: quien orquesta impone las cuatro skills, quien implementa carga tres | `_comun/metodo.md` único | `_comun/metodo.md` (las cuatro y qué posee cada una, invariante) + la tabla de «cuáles te tocan» en cada `portable.md` |
+
+  Los dos primeros son la prueba de que el límite portable/perfil **no aguanta siendo un comentario**:
+  llevaban ahí desde que se escribieron los agentes, en una sola de las dos copias, y nadie lo vio.
+  Ahora es un límite de fichero y falla.
+
+  **Decisión que NO se toma aquí y queda para quien dirija**: el hallazgo 1 es candidato a
+  generalizarse dentro de la skill `stop-and-report` —«no debilitar una aserción» ya lo cubre, pero
+  el caso concreto del límite es buena ilustración—. Cambiar una skill es cambiar el método y sube
+  versión, así que de momento se queda como regla de la casa del proyecto.
+
+- [x] **T-008 · La parte de perfil no contiene prosa de proyecto** (AC-6)
+  - **Toca**: `templates/roles/*/{perfil,cierre,frontmatter}.*`, `test/plantillas.test.mjs`
+  - **DONE**: `npm test` → 64/64.
+  - **El test lleva su propio guardián**, porque la comprobación de AC-6 puede pasar **por no haber
+    renderizado nada**: un marcador que el centinela no cubre sale vacío y se lleva consigo la prosa
+    que lo rodea. El guardián comprueba que el centinela resuelve todos los marcadores, cada uno
+    dentro de su bloque. Cazó un `tests_minimos` sin cubrir en su primera ejecución.
+  - **Mutaciones**: escribir un stack a mano en `perfil.md.tmpl` → cae 1 · quitar un campo del
+    centinela → cae 1.
+
+- [x] **T-009 · El frontmatter lleva el modelo de cada par rol × herramienta** (AC-8, AC-9)
+  - **Toca**: `templates/roles/*/frontmatter.yml.tmpl`, `test/modelos.test.mjs`, **`src/roles.mjs`**
+    (desvío: no estaba declarado; la plantilla no puede serializar YAML anidado sin lógica, así que
+    el bloque se **precalcula**, que es lo que manda D2).
+  - **RED**: 8/10 por aserción.
+  - **DONE**: `npm test` → 64/64.
+  - **Mutaciones**: emitir campos a la herramienta que no admite modelo → caen 2 · iterar la tabla
+    en vez de las herramientas activas → caen 3.
+  - **Un caso sin mutación que lo mate**: «es determinista». No hay forma de romperlo con el código
+    actual; es un guardián contra un cambio futuro, no una medida de hoy. Se deja escrito para no
+    contarlo como cobertura.
 
 ## Fase 4 · Configuración
 
