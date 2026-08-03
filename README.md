@@ -50,9 +50,18 @@ llamadas por hora y por IP; con una decena de skills de terceros se agotan de un
 
 ## Estado
 
-**En construcción.** La spec `000` está escrita; la implementación no ha empezado. Nada de lo de abajo
-funciona todavía, y decir lo contrario sería el tipo de verde falso que este método existe para
-impedir.
+**En construcción, con lo que funciona verificado y lo que no, dicho.**
+
+Funciona y está probado de punta a punta contra un proyecto real: `showi sync` y `showi check`, el
+motor de plantillas, el validador del perfil, la tabla de modelos por herramienta, la instrumentación,
+y la instalación del método desde el remoto con reparto a los seis destinos —comprobado que llega el
+**mismo cuerpo** a los seis, no solo que los ficheros existan—.
+
+No existe todavía: `showi init`, `showi update`, `showi doctor`, el puente de specs a Kiro, y la
+verificación de que **Kiro lee de verdad** lo generado, que es manual por diseño y está declarada como
+no automatizable en la spec.
+
+Estado por tarea en [`specs/000-extraccion/tasks.md`](specs/000-extraccion/tasks.md).
 
 ## Por qué existe
 
