@@ -39,6 +39,16 @@ algo: un comando que no corre nada sale en verde y no significa nada.
   - **Mutaciones**: obligatorios invertidos → caen 9 · el vigía de palabras no vigila → cae 1 ·
     solo se reporta el primer problema → cae 1.
 
+### Desvío de la fase 4
+
+`src/config.mjs` no estaba en los artefactos de T-010. Los cuatro ficheros de configuración son JSON,
+y el JSON generado concatenando texto se rompe por una coma. Se construye la estructura en código
+—válida por construcción— y la plantilla pone lo único que un serializador no sabe poner: la cabecera
+que explica de dónde salió el fichero y que no se edita a mano.
+
+También entra la primera **dependencia de producción**, `yaml`, prevista en el plan: Node no trae
+parser y el perfil se escribe en YAML porque se lee más de lo que se escribe.
+
 ### Desvío de la fase 3
 
 `src/roles.mjs` no estaba en los artefactos de T-009. Se estrenó porque el frontmatter necesita YAML
@@ -149,16 +159,23 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 
 ## Fase 4 · Configuración
 
-- [ ] **T-010 · Las plantillas de configuración salen del perfil**
-  - **RED**: renderizar las cuatro plantillas de configuración con el perfil de referencia y comparar
-    con el *snapshot*; falla porque no hay plantillas.
-  - **Toca**: `templates/config/**`, `test/fixtures/**`, `test/config.test.mjs`
-  - **DONE**: `node --test test/config.test.mjs`
+- [x] **T-010 · Las plantillas de configuración salen del perfil**
+  - **Toca**: `templates/config/**`, `test/fixtures/one-markdown/showi.yml`, `test/config.test.mjs`,
+    **`src/config.mjs`** (desvío, ver abajo)
+  - **RED**: 19/20, siete por `ENOENT` de plantilla ausente y el resto por aserción.
+  - **DONE**: `npm test` → 84/84.
+  - **Mutaciones**: ignorar `instrumentacion.habilitada` → cae 1 · emitir MCP no habilitados → cae 1 ·
+    traer el método por rama en vez de por tag → cae 1 · resolver la interpolación de entorno de la
+    cadena de conexión → cae 1.
+  - La mutación de la cadena de conexión merece nombrarse: **resolverla metería una credencial en un
+    fichero versionado**, y el test lo impide.
 
-- [ ] **T-011 · Las plantillas de spec parametrizan los comandos del proyecto**
-  - **RED**: el comando de ejemplo de la plantilla de tareas sale del perfil, no escrito a mano.
+- [x] **T-011 · Las plantillas de spec parametrizan los comandos del proyecto**
   - **Toca**: `templates/specs/**`, `test/config.test.mjs`
-  - **DONE**: `node --test test/config.test.mjs`
+  - **DONE**: `npm test` → 84/84.
+  - **Mutación**: escribir a mano el comando de ejemplo en `tasks.md.tmpl` → caen 2. El segundo caso
+    es el que importa: comprueba que **cambiar el perfil cambia el comando**. Sin él, un comando
+    escrito a mano que casualmente coincida con el del perfil pasaría igual.
 
 ## Fase 5 · Instrumentación y CLI
 
