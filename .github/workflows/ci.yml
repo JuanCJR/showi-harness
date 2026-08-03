@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm ci
+
+      # Los tests, que incluyen los guardianes del método: que lo portable no lleve marcadores,
+      # que el perfil no lleve prosa de ningún proyecto, y que ningún bloque de plantilla se anide
+      # dentro de sí mismo.
+      - name: Tests
+        run: npm test
+
+      # Que el método no nombre un stack concreto. Si lo hace, al portarlo mentirá.
+      - name: Integridad de la fuente
+        run: npm run integridad
+
+      # La mitad negativa: si el CI no sabe ponerse rojo, su verde no significa nada. Se contamina
+      # el método a propósito y se comprueba que el instrumento lo caza.
+      - name: El guardián sabe fallar
+        run: |
+          cp skills/stop-and-report/SKILL.md /tmp/bak
+          echo 'Los tests se corren con vitest.' >> skills/stop-and-report/SKILL.md
+          if npm run integridad; then
+            echo "::error::el guardián NO detectó una fuga de stack en el método"
+            exit 1
+          fi
+          cp /tmp/bak skills/stop-and-report/SKILL.md
+          echo "el guardián detecta la fuga · correcto"
+
+  instalacion:
+    # Contra el remoto de verdad: probar la instalación con una copia local demostraría que `cp`
+    # funciona, no que `rulesync install` resuelve el origen y lo fija por SHA.
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Instalar desde el remoto y repartir a los seis destinos
+        env:
+          # Sin token, la API de GitHub da 60 llamadas por hora y por IP: se agotan y falla con 403
+          # sin instalar ninguno, ni el método.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash test/instalacion.sh

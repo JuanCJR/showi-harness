@@ -155,6 +155,17 @@ describe('check detecta la deriva', () => {
     sincronizar(proyecto);
   });
 
+  it('NO cubre el reparto a las herramientas, y eso hay que saberlo', () => {
+    // Verificado en el proyecto real: una línea metida a mano en `.claude/agents/frontend.md` pasa
+    // por `showi check` sin que se note. No es un defecto —ese tramo es de rulesync— pero suponer
+    // que este comando cubre los dos tramos deja un hueco por el que se cuela justo lo que la
+    // comprobación de deriva existe para cazar. Los dos comandos hacen falta.
+    sincronizar(proyecto);
+    mkdirSync(join(proyecto, '.claude/agents'), { recursive: true });
+    writeFileSync(join(proyecto, '.claude/agents/frontend.md'), 'editado a mano\n');
+    assert.deepEqual(comprobar(proyecto).problemas, [], 'si esto cambia, actualiza la doc de check');
+  });
+
   it('compara contenido, no solo existencia', () => {
     // La mutación obvia de un `check` es comprobar que el fichero está y dar por bueno lo que tenga.
     sincronizar(proyecto);

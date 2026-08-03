@@ -223,6 +223,11 @@ export function sincronizar(proyecto, opciones = {}) {
 /**
  * Vuelve a derivar y compara **contenido**, no existencia. Comprobar solo que el fichero está
  * dejaría pasar justo el caso que importa: alguien lo editó a mano y sigue ahí.
+ *
+ * **Cubre el primer tramo y solo ese**: `showi.yml` → `.rulesync/`, `.harness/` y las plantillas de
+ * spec. **No cubre el reparto** a `.claude/`, `.cursor/`, `.kiro/` y demás, que lo hace rulesync y
+ * lo comprueba `rulesync generate --check`. Verificado: una edición a mano en `.claude/agents/` pasa
+ * por aquí sin que se note. Los dos comandos hacen falta, y ninguno sustituye al otro.
  */
 export function comprobar(proyecto) {
   const problemas = [];
@@ -265,7 +270,8 @@ if (process.argv[1]?.endsWith('cli.mjs') || process.argv[1]?.endsWith('showi')) 
     } else if (orden === 'check') {
       const { problemas } = comprobar(proyecto);
       if (problemas.length === 0) {
-        console.log('showi check · sin deriva');
+        console.log('showi check · sin deriva entre showi.yml y .rulesync/');
+        console.log('  (el reparto a las seis herramientas lo comprueba `rulesync generate --check`)');
       } else {
         console.error(`showi check · ${problemas.length} problema(s):`);
         for (const p of problemas) console.error(`  ${p}`);

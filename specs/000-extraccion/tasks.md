@@ -345,7 +345,24 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
 ## Fase 9-11 · Puente, CI y publicación
 
 - [ ] **T-021 · Proyección de specs y detección de deriva** (D5)
-- [ ] **T-022 · CI: instalación fijada, ausencia de deriva, integridad**
+- [x] **T-022 · CI: instalación fijada, ausencia de deriva, integridad**
+  - **Toca**: `.github/workflows/ci.yml` aquí · `.github/workflows/harness.yml` en el consumidor
+  - **Los dos llevan su mitad negativa**, ejecutada y no supuesta: se contamina el método a
+    propósito y se comprueba que el guardián lo caza; se edita un generado y se comprueba que el CI
+    se pone rojo. Sin eso, un verde no demuestra nada: podría estar comprobando ficheros que no
+    existen y salir 0 igual.
+
+  **HALLAZGO · `showi check` no cubre lo que yo había escrito que cubría.** Una línea metida a mano
+  en `.claude/agents/frontend.md` **pasa sin que se note**: ese tramo es de rulesync, no suyo.
+
+  | Comando | Tramo |
+  |---|---|
+  | `showi check` | `showi.yml` → `.rulesync/` |
+  | `rulesync generate --check` | `.rulesync/` → las seis herramientas |
+
+  Ninguno sustituye al otro. El comando ahora **dice qué no cubre** en vez de dejar que se suponga,
+  y hay un test que fija el límite: si algún día `check` empieza a cubrir el reparto, ese test cae y
+  obliga a actualizar la documentación.
 - [x] **T-023 · `update` no toca el perfil ni el registro de defectos** (AC-16, AC-17)
   - **Toca**: `src/ciclo.mjs`, `src/cli.mjs`, `test/ciclo.test.mjs`
   - **RED**: 6/10 por aserción. **DONE**: `npm test` → 141/141.
