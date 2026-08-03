@@ -24,12 +24,19 @@ PROYECTO="${1:-}"
 faltan=0
 fugas=0
 divergen=0
+invisibles=0
 
 rojo()  { printf '  \033[31m✗\033[0m %s\n' "$1"; }
 verde() { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 
 # El cuerpo, sin el frontmatter: `metadata.origin` es procedencia, no contenido.
 cuerpo() { awk 'NR>1 && /^---$/{p=1;next} p' "$1"; }
+
+# Un fichero puede estar en el disco y **no en el repositorio**, y entonces quien clona no lo tiene.
+# Este script miraba solo el disco, y por ese hueco `.agents/` —la ruta que leen cuatro herramientas—
+# llevaba fuera del control de versiones sin que nada avisara. Estar presente aquí no es estar.
+versionado() { git -C "${PROYECTO:-.}" ls-files --error-unmatch "$1" >/dev/null 2>&1; }
+es_repo() { git -C "${PROYECTO:-.}" rev-parse --git-dir >/dev/null 2>&1; }
 
 comprobar_fuga() {
   local f="$1" hallazgo
@@ -100,6 +107,10 @@ else
         continue
       fi
       comprobar_fuga "$f"
+      if es_repo && ! versionado "$f"; then
+        rojo "SIN VERSIONAR · $f está en el disco pero no en el repositorio: quien clone no lo tendrá"
+        invisibles=$((invisibles + 1))
+      fi
       # El CUERPO, no el fichero: cada herramienta serializa el frontmatter a su manera y eso
       # es correcto. Lo que no puede variar es el método. Ver AC-2 y el CHANGELOG 0.1.1.
       hashes+=("$(cuerpo "$f" | sha1sum | cut -d' ' -f1)")
@@ -115,10 +126,10 @@ else
 fi
 
 echo
-total=$((faltan + fugas + divergen))
+total=$((faltan + fugas + divergen + invisibles))
 if [[ "$total" -eq 0 ]]; then
   echo "Sin problemas."
   exit 0
 fi
-echo "Problemas: $faltan ausencia(s) · $fugas fuga(s) · $divergen divergencia(s)"
+echo "Problemas: $faltan ausencia(s) · $fugas fuga(s) · $divergen divergencia(s) · $invisibles sin versionar"
 exit 1

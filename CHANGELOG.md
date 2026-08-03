@@ -10,6 +10,18 @@ mejorar el método sin obligar a nadie a tocar su perfil.
 
 ---
 
+## 0.3.1 — 2026-08-03
+
+**El guardián de integridad tenía un punto ciego: miraba el disco, no el repositorio.** Un fichero
+puede estar presente localmente y ausente de lo comiteado, y entonces quien clona no lo tiene. Por
+ese hueco, en el proyecto de referencia **182 ficheros —las cuatro skills de método incluidas—
+llevaban fuera del control de versiones** en `.agents/skills/`, que es la ruta que leen Cursor,
+Copilot, opencode y Codex, y exactamente donde vivía el defecto original. La causa era una línea de
+`.gitignore` heredada de un script que ya no existe.
+
+Ahora lo reporta como `SIN VERSIONAR`, distinto de `FALTA`, porque el arreglo es distinto: uno se
+regenera, el otro se comitea. Estar presente no es estar disponible.
+
 ## 0.3.0 — 2026-08-03
 
 **Catálogo de roles.** `showi roles` lista lo que hay; `showi init --roles a,b,c` elige. Entran
