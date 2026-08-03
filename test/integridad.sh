@@ -86,14 +86,16 @@ else
         continue
       fi
       comprobar_fuga "$f"
-      hashes+=("$(sha1sum "$f" | cut -d' ' -f1)")
+      # El CUERPO, no el fichero: cada herramienta serializa el frontmatter a su manera y eso
+      # es correcto. Lo que no puede variar es el método. Ver AC-2 y el CHANGELOG 0.1.1.
+      hashes+=("$(cuerpo "$f" | sha1sum | cut -d' ' -f1)")
     done
     distintos=$(printf '%s\n' "${hashes[@]:-}" | sort -u | grep -c .)
     if [[ "$distintos" -gt 1 ]]; then
-      rojo "DIVERGE · «$skill» tiene $distintos versiones distintas entre los destinos"
+      rojo "DIVERGE · el método de «$skill» tiene $distintos versiones distintas entre destinos"
       divergen=$((divergen + 1))
     elif [[ "$distintos" -eq 1 && "${#hashes[@]}" -eq "${#RUTAS_SKILL[@]}" ]]; then
-      verde "$skill — $distintos versión en ${#hashes[@]} destinos"
+      verde "$skill — mismo método en ${#hashes[@]} destinos"
     fi
   done
 fi

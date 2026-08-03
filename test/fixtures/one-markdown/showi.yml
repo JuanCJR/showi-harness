@@ -29,7 +29,9 @@ documentos:
     histórico de cada feature va a su CHANGELOG, no ahí.
 
 herramientas:
-  activas: [claudecode, cursor, copilot, opencode, kiro-ide, agentsmd]
+  # `agentsmd` da la raíz del método a Kiro (no tiene fichero raíz propio en ámbito de proyecto).
+  # `agentsskills` es el que emite `.agents/skills/`, la ruta neutral: `agentsmd` NO emite skills.
+  activas: [claudecode, cursor, copilot, opencode, kiro-ide, agentsmd, agentsskills]
 
 # ── La tabla que decide bajo qué LLM trabaja cada rol, en cada herramienta ────────────────────
 modelos:

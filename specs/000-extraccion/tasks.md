@@ -109,9 +109,27 @@ suplantaban al método y hablan de Prisma, React y `jest.fn()`. Salida completa 
   - **RED real**: `FALTA · rules/metodo.md — es la raíz del método, la que acaba en AGENTS.md`, exit 1.
   - **DONE**: `bash test/integridad.sh` → exit 0.
 
-- [~] **T-006 · Un repositorio desechable instala el método por SHA** · **BLOQUEADA**: no hay
-      remoto publicado. No se simula con una copia local — probaría otra cosa. Espera a
-      `JuanCJR/showi-harness` en GitHub.
+- [x] **T-006 · Un repositorio desechable instala el método por SHA**
+  - **Toca**: `test/instalacion.sh`
+  - **DONE**: `bash test/instalacion.sh` → exit 0, contra el remoto real. Fuera de `npm test`: pide
+    red y depende de un tercero.
+  - **Salida real**: `install` fijó `ff41ad3d40aec7ebbbaffdb34d8093b00eeaf0d5` en el lockfile,
+    `generate` repartió a siete destinos, y la integridad del árbol dio *«mismo método en 6
+    destinos»* para las cuatro skills. El punto de partida era un `git init` vacío, así que cubre
+    también AC-15.
+
+  **DOS HALLAZGOS, los dos al ejecutar el fan-out de verdad y ninguno visible leyendo documentación:**
+
+  1. **AC-2 era inalcanzable.** Pedía copias byte a byte idénticas entre destinos y no pueden serlo:
+     cada herramienta serializa el frontmatter con sus convenciones de YAML —una pliega la
+     descripción, otra la deja en una línea—. Medido: cinco destinos, **tres serializaciones del
+     frontmatter y un solo cuerpo**. Caso 3 del contrato de parada, en la spec de este repositorio.
+     Corregido en la spec 0.1.1 para hablar del **cuerpo**, que es lo que no puede variar; el
+     instrumento se ajustó a la vez. No se debilita: sigue saliendo 1 si el método difiere.
+  2. **`agentsmd` no emite skills.** El destino que puebla `.agents/skills/` —la ruta neutral que
+     leen Cursor, Copilot, opencode y Codex— es **`agentsskills`**, otro distinto. Sin él, la ruta
+     donde estaba el defecto original se habría quedado vacía y nadie lo habría notado hasta abrir
+     una de esas herramientas. Añadido a las activas del perfil.
   - **RED**: instalar desde el repositorio del método en un directorio temporal y comprobar AC-1;
     falla mientras no haya remoto publicado. **Bloqueante conocido**: requiere el repositorio
     publicado. Si no lo está, se para y se avisa — no se simula con una copia local, que probaría otra

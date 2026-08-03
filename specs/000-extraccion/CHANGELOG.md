@@ -1,5 +1,20 @@
 # 000 · Historial
 
+## 0.1.1 — 2026-08-03
+
+**AC-2 era inalcanzable.** Exigía que las copias de una skill fueran byte a byte idénticas entre
+destinos, y no pueden serlo: cada herramienta serializa el frontmatter con sus propias convenciones
+de YAML. Medido sobre un árbol generado de verdad: cinco destinos, tres serializaciones distintas del
+frontmatter y **un solo cuerpo**.
+
+Se corrige el criterio para que hable del **cuerpo**, que es lo que no puede variar. No se debilita:
+sigue saliendo 1 si el método difiere en un destino, que es lo que el criterio quería decir.
+
+Es el caso 3 del contrato de parada —un criterio que no se puede cumplir— ocurriendo en la spec de
+este repositorio. Salió al ejecutar el fan-out real, no al revisar el documento.
+
+Patch y no minor: el recuento de criterios no se mueve.
+
 ## 0.1.0 — 2026-08-03
 
 Primera versión. Extracción del harness a repositorio propio, con proyección multi-herramienta y

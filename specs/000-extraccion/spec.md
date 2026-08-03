@@ -1,6 +1,6 @@
 # 000 · Extracción del harness a repositorio propio
 
-**Versión**: 0.1.0 · **Estado**: borrador · **Depende de**: nada
+**Versión**: 0.1.1 · **Estado**: borrador · **Depende de**: nada
 
 ## Por qué
 
@@ -53,9 +53,13 @@ Ningún recuento de este documento está escrito a mano; todos salen de estas do
 *Verifica*: el script de integridad recorre el producto cartesiano de las dos listas y sale 1 a la
 primera ausencia. *Mutación que lo tumba*: borrar un directorio de skill de una sola ruta.
 
-**AC-2** · Todas las copias de una misma skill son byte a byte idénticas.
-*Verifica*: `sha1sum` de las copias de cada skill, agrupado; más de un hash distinto para una skill
-sale 1. *Mutación*: editar una palabra en una sola copia.
+**AC-2** · El **cuerpo** de una misma skill es idéntico en todos los destinos.
+*Verifica*: `sha1sum` del cuerpo —sin el frontmatter— de cada copia, agrupado; más de un hash
+distinto para una skill sale 1. *Mutación*: editar una palabra del método en una sola copia.
+
+> Dice «cuerpo» y no «fichero» porque **byte a byte es inalcanzable, y se comprobó**: cada
+> herramienta serializa el frontmatter a su manera —una pliega la descripción, otra la deja en una
+> línea— y eso es correcto, no una fuga. Lo que no puede variar es el método. Ver el CHANGELOG 0.1.1.
 
 **AC-3** · Ninguna skill de `METODO` nombra un proyecto, un stack o un fichero de seguimiento.
 *Verifica*: sobre el **cuerpo** de cada `SKILL.md` (excluido el frontmatter, donde `metadata.origin` es
