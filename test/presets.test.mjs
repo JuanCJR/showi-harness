@@ -110,6 +110,20 @@ describe('init elige del catálogo', () => {
     rmSync(d, { recursive: true, force: true });
   });
 
+  it('el perfil que deja está COMPLETO, no cortado por donde entran los roles', () => {
+    // Se perdió de verdad: al insertar el marcador de roles se truncó la plantilla y todo proyecto
+    // creado con `init` nacía **sin instrumentación**, que es la mitad del valor del montaje. Lo
+    // encontró el primer proyecto ajeno, no un test. Este caso existe para que no vuelva.
+    const d = conRoles(['orchestrator']);
+    const perfil = parse(readFileSync(join(d, 'showi.yml'), 'utf8'));
+    assert.equal(perfil.instrumentacion?.habilitada, true, 'nace sin medición');
+    assert.ok(perfil.instrumentacion.hooks, 'sin hooks declarados no se mide nada');
+    for (const seccion of ['showi', 'proyecto', 'documentos', 'herramientas', 'modelos', 'roles']) {
+      assert.ok(perfil[seccion], `falta la sección «${seccion}»`);
+    }
+    rmSync(d, { recursive: true, force: true });
+  });
+
   it('para si se le pide un rol que no está en el catálogo, y lo nombra', () => {
     const d = mkdtempSync(join(tmpdir(), 'showi-pre-mal-'));
     assert.throws(() => iniciar(d, { nombre: 'X', slug: 'x', roles: ['inventado'] }), /inventado/);

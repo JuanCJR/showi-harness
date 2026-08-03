@@ -19,7 +19,7 @@ import { render } from './render.mjs';
 import { bloqueDePerfil, catalogo } from './presets.mjs';
 
 const AQUI = new URL('..', import.meta.url).pathname;
-const VERSION_METODO = '0.3.2';
+const VERSION_METODO = '0.3.3';
 
 /**
  * Crea el perfil de un proyecto nuevo y lo sincroniza. El perfil nace con marcadores `TODO`

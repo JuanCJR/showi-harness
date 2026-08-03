@@ -10,6 +10,20 @@ mejorar el método sin obligar a nadie a tocar su perfil.
 
 ---
 
+## 0.3.3 — 2026-08-03
+
+**Dos defectos que encontró el primer proyecto ajeno**, no un test. Los dos eran invisibles desde el
+proyecto de referencia, porque su perfil se escribió a mano antes de que existiera `init`.
+
+- **`init` dejaba el perfil truncado.** Al meter el marcador de roles en la plantilla se cortó todo
+  lo que venía después, y con ello el bloque `instrumentacion:`. **Todo proyecto creado con `init`
+  nacía sin medición** —la mitad del valor del montaje— y `doctor` lo reportaba como «apagada en el
+  perfil», que suena a decisión y era una pérdida.
+- **`doctor` daba error por herramientas que el proyecto había decidido no usar.** Comprobaba las
+  seis rutas de skills sin mirar cuáles estaban activas: un proyecto con tres destinos recibía
+  «0/4 skills completas». Un falso positivo mata a un guardián, porque se aprende a ignorarlo y con
+  él se ignora lo que sí importa.
+
 ## 0.3.2 — 2026-08-03
 
 **`install.sh`**: una línea y `showi` queda disponible en cualquier terminal.

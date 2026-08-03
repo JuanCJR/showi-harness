@@ -23,14 +23,24 @@ const METODO = [
   'stop-and-report',
   'verification-and-measurement',
 ];
-const RUTAS_SKILL = [
-  '.claude/skills',
-  '.cursor/skills',
-  '.github/skills',
-  '.opencode/skills',
-  '.kiro/skills',
-  '.agents/skills',
-];
+/**
+ * Qué ruta de skills alimenta cada destino. **Solo se miran las de los destinos activos**: dar por
+ * ausente una skill en una herramienta que el proyecto decidió no usar es un falso positivo, y los
+ * falsos positivos matan a los guardianes — se aprende a ignorarlos y con ellos se ignora lo que sí
+ * importa. Lo encontró el primer proyecto ajeno, que activaba tres destinos y recibía un error por
+ * los otros tres.
+ */
+const RUTA_DE = {
+  claudecode: '.claude/skills',
+  cursor: '.cursor/skills',
+  copilot: '.github/skills',
+  opencode: '.opencode/skills',
+  'kiro-ide': '.kiro/skills',
+  agentsskills: '.agents/skills',
+};
+
+const rutasDe = (perfil) =>
+  (perfil.herramientas?.activas ?? []).map((h) => RUTA_DE[h]).filter(Boolean);
 
 const ok = (texto) => ({ nivel: 'ok', texto });
 const aviso = (texto) => ({ nivel: 'aviso', texto });
@@ -64,10 +74,14 @@ export function diagnosticar(proyecto) {
 
 function metodo(en, perfil) {
   const h = [];
+  const RUTAS_SKILL = rutasDe(perfil);
+  if (RUTAS_SKILL.length === 0) {
+    return [aviso('ninguna herramienta activa lee skills: el método no llega a ningún sitio')];
+  }
   const presentes = METODO.filter((s) => RUTAS_SKILL.every((r) => existsSync(en(r, s, 'SKILL.md'))));
   h.push(
     presentes.length === METODO.length
-      ? ok(`${presentes.length}/${METODO.length} skills en las ${RUTAS_SKILL.length} rutas`)
+      ? ok(`${presentes.length}/${METODO.length} skills en las ${RUTAS_SKILL.length} rutas activas`)
       : error(
           `${presentes.length}/${METODO.length} skills completas — faltan: ` +
             METODO.filter((s) => !presentes.includes(s)).join(', '),
@@ -105,7 +119,7 @@ function metodo(en, perfil) {
 function skills(en, perfil) {
   const h = [];
   const disponibles = new Set(
-    RUTAS_SKILL.flatMap((r) => (existsSync(en(r)) ? readdirSync(en(r)) : [])),
+    rutasDe(perfil).flatMap((r) => (existsSync(en(r)) ? readdirSync(en(r)) : [])),
   );
 
   const declaradas = new Map();

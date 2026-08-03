@@ -78,6 +78,26 @@ describe('el método', () => {
   });
 });
 
+describe('solo se mira lo que el proyecto ha activado', () => {
+  it('no reporta como ausentes las rutas de herramientas que no se usan', () => {
+    // Lo encontró el primer proyecto ajeno: activaba tres destinos y `doctor` decía «0/4 skills
+    // completas» porque comprobaba los seis. Un error por algo que se decidió no usar es un falso
+    // positivo, y los falsos positivos matan a los guardianes: se aprende a ignorarlos.
+    const proy = rehacer((p) =>
+      p.replace(/^  activas: \[.*$/m, '  activas: [claudecode, agentsmd, agentsskills]'),
+    );
+    for (const r of ['.cursor', '.github', '.opencode', '.kiro']) {
+      rmSync(join(proy, r), { recursive: true, force: true });
+    }
+    const d = diagnosticar(proy);
+    const errores = d.secciones
+      .find((s) => s.titulo.includes('MÉTODO'))
+      .hallazgos.filter((h) => h.nivel === 'error');
+    assert.deepEqual(errores, [], JSON.stringify(errores));
+    rmSync(proy, { recursive: true, force: true });
+  });
+});
+
 describe('skills declaradas × presentes', () => {
   it('caza una skill que un rol declara obligatoria y no existe', () => {
     // Exactamente `find-docs`: declarada en dos roles durante siete specs, inexistente.
