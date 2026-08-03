@@ -1,0 +1,41 @@
+{
+  "name": "showi-harness",
+  "version": "0.0.0",
+  "description": "El método —SDD, TDD, contrato de parada y verificación— llevado a cualquier proyecto y a cualquier herramienta desde una sola fuente",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "showi": "src/cli.mjs"
+  },
+  "files": [
+    "src",
+    "skills",
+    "rules",
+    "templates",
+    "instrumentacion",
+    "schema"
+  ],
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "keywords": [
+    "agents",
+    "agents-md",
+    "skills",
+    "spec-driven-development",
+    "tdd",
+    "claude-code",
+    "cursor",
+    "copilot",
+    "kiro",
+    "opencode"
+  ],
+  "peerDependenciesMeta": {
+    "rulesync": {
+      "optional": true
+    }
+  }
+}

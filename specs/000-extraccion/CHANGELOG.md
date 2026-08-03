@@ -9,7 +9,7 @@ Nace de dos fallos medidos en el proyecto de origen, no de una preferencia: una 
 recibe una mejora del método, y fuera de una sola herramienta se estaba cargando un método distinto
 —dos skills de terceros en lugar de las propias, y otras dos ausentes— sin que nada lo detectara.
 
-Se deja deliberadamente abierta la forma exacta de `harness.yml` hasta el primer render en verde, y sin
+Se deja deliberadamente abierta la forma exacta de `showi.yml` hasta el primer render en verde, y sin
 detallar las tareas de las tres últimas fases. Fijarlas ahora produciría correcciones que no compran
 nada.
 

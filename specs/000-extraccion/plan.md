@@ -7,10 +7,10 @@
 | Capa | Qué mueve | Quién | Se fija con |
 |---|---|---|---|
 | **A · método** | las skills de `METODO` + `rules/metodo.md` | `rulesync install` desde `sources` | `rulesync.lock` (SHA) |
-| **B · perfil** | subagentes, reglas del proyecto, hooks, permisos, MCP, plantillas de spec | `harness sync` → escribe `.rulesync/**` | `harness.yml` + tag del método |
+| **B · perfil** | subagentes, reglas del proyecto, hooks, permisos, MCP, plantillas de spec | `showi sync` → escribe `.rulesync/**` | `showi.yml` + tag del método |
 | **C · fan-out** | los formatos de `HERRAMIENTAS` | `rulesync generate` | — |
 
-`harness sync` = renderizar B → `rulesync install --frozen` (A) → `rulesync generate` (C).
+`showi sync` = renderizar B → `rulesync install --frozen` (A) → `rulesync generate` (C).
 
 **La frontera A/B la impone rulesync, no el gusto**: su mecanismo `sources` trae reglas y skills desde
 un repositorio remoto, pero **no** trae subagentes, hooks, permisos ni MCP. Todo lo que `sources` no
@@ -25,7 +25,7 @@ menudo, y el mantenimiento recaería aquí cada vez que una herramienta mueva un
 
 **Riesgo asumido**: rulesync lo mantiene una sola persona y evoluciona rápido. Se acota fijando la
 versión y capturando la salida como *snapshot*, de modo que subirla enseñe el diff exacto de lo que
-cambia. Y se acota estructuralmente: `harness.yml` y las plantillas **no saben nada de rulesync**, así
+cambia. Y se acota estructuralmente: `showi.yml` y las plantillas **no saben nada de rulesync**, así
 que sustituir el emisor toca `src/`, no las fuentes.
 
 ### D2 · Un motor de plantillas sin lógica
@@ -59,7 +59,7 @@ más caro de reconstruir que tiene un proyecto maduro, y una actualización se l
 Sale a un documento del proyecto que el harness **jamás escribe** (AC-16), y el rol lo enlaza. Un
 proyecto nuevo lo empieza vacío.
 
-**Descartado: generarlo desde `harness.yml`.** Convertiría prosa larga y específica en un campo de
+**Descartado: generarlo desde `showi.yml`.** Convertiría prosa larga y específica en un campo de
 configuración, y volvería a ponerlo en la trayectoria de un `update`.
 
 ### D5 · El formato de spec propio es canónico; el de Kiro es proyección de solo lectura
@@ -97,7 +97,7 @@ cambios del método encima.
 
 ## Contratos
 
-**`harness.yml`** — el único fichero que escribe una persona, y el único que el harness no sobreescribe
+**`showi.yml`** — el único fichero que escribe una persona, y el único que el harness no sobreescribe
 (salvo la línea de versión del método en una actualización, y las migraciones, que muestran el diff
 antes de tocar nada). Su forma exacta queda deliberadamente abierta hasta el primer render en verde:
 fijarla ahora produciría correcciones que no compran nada.

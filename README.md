@@ -1,9 +1,11 @@
-# harness-metodo
+# showi
 
 El método —especificación antes que código, TDD, contrato de parada y verificación— empaquetado para
 llevarlo a cualquier proyecto y a cualquier herramienta.
 
-Un proyecto declara su perfil en un `harness.yml`. De ahí salen los ficheros que cada herramienta sabe
+> Paquete `showi-harness`, comando `showi`.
+
+Un proyecto declara su perfil en un `showi.yml`. De ahí salen los ficheros que cada herramienta sabe
 leer: Claude Code, Cursor, GitHub Copilot, Kiro, opencode y el `AGENTS.md` genérico. **Una sola fuente,
 seis destinos** — y el modelo con el que trabaja cada rol en cada herramienta es un campo de ese mismo
 fichero.
@@ -16,8 +18,24 @@ fichero.
 | `rules/` | La raíz del método, la que acaba en `AGENTS.md` y equivalentes. |
 | `templates/` | Los roles partidos en dos: lo portable y lo que rellena el perfil. |
 | `instrumentacion/` | Los hooks que miden qué skills se usan de verdad y quién escribe el código. |
-| `src/` | El CLI: `init`, `sync`, `check`, `update`, `doctor`, `specs`. |
+| `src/` | El CLI. |
 | `specs/` | Este repositorio se construye con su propio método. Empieza por [`000-extraccion`](specs/000-extraccion/spec.md). |
+
+## Los comandos
+
+```
+showi init                      instalar el harness en un repositorio
+showi sync                      showi.yml + el método  →  los seis destinos
+showi check                     ¿algún generado ha derivado?           (sale 1 si sí)
+showi update                    traer una versión nueva del método
+showi doctor                    cruzar declarado × presente × habilitado
+showi specs project --to kiro   proyectar las specs al formato de Kiro
+```
+
+`doctor` merece nombrarse aparte: implementa como comando una advertencia que hasta ahora solo estaba
+escrita en prosa — *una skill o un servidor apagado en la configuración no se puede invocar aunque un
+rol lo declare obligatorio*. Ese cruce es el que dejó tres skills muertas durante siete specs, y hoy no
+lo hace nadie.
 
 ## Estado
 

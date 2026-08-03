@@ -25,10 +25,10 @@ algo: un comando que no corre nada sale en verde y no significa nada.
   - **Toca**: `test/render.test.mjs`, `src/render.mjs`
   - **DONE**: `node --test test/render.test.mjs`
 
-- [ ] **T-003 · El esquema de `harness.yml` se valida y falla con el campo que falta**
+- [ ] **T-003 · El esquema de `showi.yml` se valida y falla con el campo que falta**
   - **RED**: un perfil al que le falta un campo obligatorio produce un error que **nombra el campo**;
     falla porque `esquema.mjs` no valida nada.
-  - **Toca**: `src/esquema.mjs`, `schema/harness.schema.json`, `test/esquema.test.mjs`
+  - **Toca**: `src/esquema.mjs`, `schema/showi.schema.json`, `test/esquema.test.mjs`
   - **DONE**: `node --test test/esquema.test.mjs`
 
 ## Fase 2 · El método como fuente instalable
@@ -115,9 +115,9 @@ algo: un comando que no corre nada sale en verde y no significa nada.
 ## Fase 6 · El proyecto de referencia
 
 - [ ] **T-016 · El perfil del proyecto de referencia reproduce sus roles actuales** (AC-7)
-  - **RED**: escribir su `harness.yml`, regenerar y comparar con los ficheros de agente actuales. El
+  - **RED**: escribir su `showi.yml`, regenerar y comparar con los ficheros de agente actuales. El
     rojo inicial es el diff completo.
-  - **Toca**: en el repositorio de referencia, `harness.yml`; aquí, `test/fixtures/`
+  - **Toca**: en el repositorio de referencia, `showi.yml`; aquí, `test/fixtures/`
   - **DONE**: diff revisado línea a línea; la única diferencia admisible es reordenación y el enlace
     del registro de defectos.
   - **Nota**: verificación **de una vez**, no de regresión (ver AC-7).

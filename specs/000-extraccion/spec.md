@@ -23,7 +23,7 @@ La causa común es la misma: **no hay una sola fuente**. Esta spec la crea.
 ## Alcance
 
 **Dentro**: el repositorio del método, con las cuatro skills y las plantillas de rol · un fichero de
-perfil por proyecto (`harness.yml`) que rellena lo que cambia entre proyectos · la proyección a las
+perfil por proyecto (`showi.yml`) que rellena lo que cambia entre proyectos · la proyección a las
 herramientas destino · la selección de modelo por rol y herramienta · la instrumentación con adaptador
 de payload · la verificación de que no hay deriva · la actualización sin perder el perfil.
 
@@ -78,8 +78,8 @@ con una fuga— producen mensajes distintos y las dos salen 1. *Mutación*: trat
 y en la salida no sobrevive ninguna palabra del proyecto de referencia. *Mutación*: escribir el nombre
 de un framework directamente en la plantilla de perfil en vez de pasarlo por un marcador.
 
-**AC-7** · Todo dato del perfil de los roles del proyecto de referencia tiene campo en `harness.yml`.
-*Verifica*: regenerar los ficheros de agente del proyecto de referencia desde su `harness.yml` y
+**AC-7** · Todo dato del perfil de los roles del proyecto de referencia tiene campo en `showi.yml`.
+*Verifica*: regenerar los ficheros de agente del proyecto de referencia desde su `showi.yml` y
 comparar con los actuales; la diferencia admisible es reordenación y el enlace del registro de
 defectos, nunca pérdida de contenido. *Mutación*: omitir un campo del esquema y ver aparecer un hueco
 en el diff. *Nota*: este criterio se verifica **una vez**, contra el proyecto de referencia; es la
@@ -88,9 +88,9 @@ prueba de que el esquema es suficiente, no un test de regresión permanente.
 ## C · El modelo se elige por rol y por herramienta
 
 **AC-8** · Para cada rol y cada herramienta de `HERRAMIENTAS` que admita selección de modelo, el
-fichero generado para esa herramienta declara el modelo que `harness.yml` asigna a ese par.
+fichero generado para esa herramienta declara el modelo que `showi.yml` asigna a ese par.
 *Verifica*: leer el frontmatter de cada fichero de subagente generado y comparar con la tabla de
-`harness.yml`. *Mutación*: cambiar el modelo de un rol en `harness.yml` sin regenerar.
+`showi.yml`. *Mutación*: cambiar el modelo de un rol en `showi.yml` sin regenerar.
 
 **AC-9** · Una herramienta que **no** admite selección de modelo se declara degradada, y no se le
 escribe un campo que ignoraría.
@@ -127,7 +127,7 @@ los tres casos termina con código 0. *Mutación*: dejar que una excepción se p
 *Verifica*: se modifica un generado y la comprobación de deriva sale 1; se restaura y sale 0.
 *Mutación*: comparar solo la existencia de los ficheros y no su contenido.
 
-**AC-14** · Un `harness.yml` cambiado sin regenerar se detecta.
+**AC-14** · Un `showi.yml` cambiado sin regenerar se detecta.
 *Verifica*: se cambia un valor del perfil sin regenerar y la comprobación sale 1. *Mutación*: cachear
 el resultado de la comprobación entre ejecuciones.
 
@@ -138,7 +138,7 @@ el resultado de la comprobación entre ejecuciones.
 *Mutación*: que la instalación dependa de un fichero que solo existe en el proyecto de referencia.
 
 **AC-16** · Una actualización del método no toca el perfil ni el registro de defectos del proyecto.
-*Verifica*: se anota el hash de `harness.yml` y del registro de defectos, se actualiza a una versión
+*Verifica*: se anota el hash de `showi.yml` y del registro de defectos, se actualiza a una versión
 del método con contenido distinto, y los dos hashes coinciden. *Mutación*: regenerar el registro de
 defectos desde la plantilla — que es justo lo que borraría lo más caro de reconstruir que tiene un
 proyecto maduro.
